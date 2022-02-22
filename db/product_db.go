@@ -54,4 +54,26 @@ func (f *ProductDB) update(product *ProductDB) error {
 		log.Fatal(err)
 	}
 	log.Printf("ID = %d, affected = %d\n", lastId, rowCnt)
+
+	    // 插入数据
+		stmt, err := db.Prepare("INSERT userinfo SET username=?,department=?,created=?")
+		checkErr(err)
+	
+		res, err := stmt.Exec("astaxie", "研发部门", "2012-12-09")
+		checkErr(err)
+	
+		id, err := res.LastInsertId()
+		checkErr(err)
+	
+		fmt.Println(id)
+		// 更新数据
+		stmt, err = db.Prepare("update userinfo set username=? where uid=?")
+		checkErr(err)
+	
+		res, err = stmt.Exec("astaxieupdate", id)
+		checkErr(err)
+	
+		affect, err := res.RowsAffected()
+		checkErr(err)
+	
 }
