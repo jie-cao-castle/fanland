@@ -4,4 +4,5 @@ type Product struct {
 	id int64;
 	imgUrl string;
 	nft *NFT;
+	tags []*ProductTag;
 }
