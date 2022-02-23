@@ -1,5 +1,7 @@
-type ProductCategory struct{
-    id long;
-	name string;
-	desc string;
+package model
+
+type ProductCategory struct {
+	id   uint64
+	name string
+	desc string
 }

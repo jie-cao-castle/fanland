@@ -1,8 +1,10 @@
-package fanland
+package model
+
+import "time"
 
 type ProductTag struct {
-	name string;
-	id int64;
+	name       string
+	id         uint64
 	createTime time.Time
 	updateTime time.Time
 }

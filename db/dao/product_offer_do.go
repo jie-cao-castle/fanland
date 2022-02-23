@@ -1,12 +1,14 @@
-package fanland
+package dao
+
+import "time"
 
 type ProductOfferDO struct {
-	id int64
-	productId int64
-	offerId int64
-	nftId int64
-	price int64
-	nftUnit int64
+	id         int64
+	productId  int64
+	offerId    int64
+	nftId      int64
+	price      int64
+	nftUnit    int64
 	createTime time.Time
 	updateTime time.Time
 }

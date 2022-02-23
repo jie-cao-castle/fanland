@@ -1,15 +1,18 @@
-package fanland
+package dao
+
+import "time"
+
 type NftDO struct {
-	id int64
-	productId int64
-	productName string
-	chainId int64
-	chainCode string
-	chainName string
-	tokenSymbol string
-	tokenName string
-	price int64
-	priceUnit int64
-	createTime time.Time
-	updateTime time.Time
+	Id          uint64
+	ProductId   uint64
+	ProductName string
+	ChainId     uint64
+	ChainCode   string
+	ChainName   string
+	TokenSymbol string
+	TokenName   string
+	Price       int64
+	PriceUnit   uint64
+	CreateTime  time.Time
+	UpdateTime  time.Time
 }

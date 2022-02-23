@@ -1,11 +1,14 @@
-package fanland
+package model
+
+import "time"
+
 type ProductOrder struct {
-	id int64
-	product *model.Product
-	nft *model.NFT
-	nftUnit int64
+	id         uint64
+	product    *Product
+	nft        *NFT
+	nftUnit    uint64
 	createTime time.Time
 	updateTime time.Time
-	status int32
-	offerId int64
+	status     int32
+	offerId    uint64
 }

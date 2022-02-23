@@ -1,7 +1,11 @@
-package fanland
+package dao
 
-type ProductCategoryDO struct{
-    id int64;
-	name string;
-	desc string;
+import "time"
+
+type ProductCategoryDO struct {
+	id         uint64
+	name       string
+	desc       string
+	createTime time.Time
+	updateTime time.Time
 }

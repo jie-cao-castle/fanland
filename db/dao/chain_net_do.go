@@ -1,9 +1,9 @@
-package fanland
+package dao
 
 type ChainNetDO struct {
-	id int64
-	chainId int64
+	id        uint64
+	chainId   uint64
 	chainCode string
 	chainName string
-	desc string
+	desc      string
 }

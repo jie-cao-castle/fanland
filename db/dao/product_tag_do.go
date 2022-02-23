@@ -1,6 +1,10 @@
+package dao
+
+import "time"
+
 type ProductTagDO struct {
-	name string;
-	id int64;
+	name       string
+	id         uint64
 	createTime time.Time
 	updateTime time.Time
 }

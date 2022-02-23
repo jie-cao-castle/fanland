@@ -1,10 +1,9 @@
-package fanland
+package model
 
 type ChainNet struct {
-	id int64
-	chainId int64
+	id        uint64
+	chainId   uint64
 	chainCode string
 	chainName string
-	desc string
+	desc      string
 }
-

@@ -1,11 +1,13 @@
+package model
+
 type NFT struct {
-	id int64
-	productId int64
+	id          uint64
+	productId   uint64
 	productName string
-	chainId int64
-	chainCode string
-	chainName string
+	chainId     uint64
+	chainCode   string
+	chainName   string
 	tokenSymbol string
-	tokenName string
-	price float64
+	tokenName   string
+	price       float64
 }

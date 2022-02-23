@@ -1,7 +1,8 @@
-package fanland
+package dao
+
 type ChainTokenDO struct {
-	id int64
+	id          uint64
 	tokenSymbol string
-	tokenName string
-	tokenDesc string
+	tokenName   string
+	tokenDesc   string
 }
