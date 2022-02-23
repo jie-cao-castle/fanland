@@ -1,3 +1,0 @@
-type Offer struct {
-	
-}

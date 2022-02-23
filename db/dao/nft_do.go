@@ -1,5 +1,5 @@
 package fanland
-type NftDAO struct {
+type NftDO struct {
 	id int64
 	productId int64
 	productName string
