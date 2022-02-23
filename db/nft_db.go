@@ -6,11 +6,11 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-type ProductDB struct {
+type NftDB struct {
 
 }
 
-func (f *ProductDB) init() error {
+func (f *NftDB) init() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	if err != nil {
@@ -19,19 +19,24 @@ func (f *ProductDB) init() error {
 	defer db.Close()
 }
 
-func (f *ProductDB) getById(id int64)(product *db.ProductDAO, err error) {
+func (f *NftDB) getById(id int64)(product *db.ProductDAO, err error) {
 	var (
-		name string
-		desc string
 		id int64
-		imgUrl string
-		nftId int64
-		tags string
+		productId int64
+		productName string
+		chainId int64
+		chainCode string
+		chainName string
+		tokenSymbol string
+		tokenName string
+		price int64
+		priceUnit int64
 		createTime time.Time
 		updateTime time.Time
 	)
 
-	rows, err := db.Query("select id, product_name, desc, imgUrl, nft_id, tag_ids, create_time, update_time from product where id = ?", id)
+	rows, err := db.Query("select id, product_id, prodect_name, chain_id, chain_code, 
+			chain_name, token_symbol, token_name, price, price_unit, create_time, update_time from nft where id = ?", id)
 	
 	if err != nil {
 		return (nil, err)
@@ -39,7 +44,7 @@ func (f *ProductDB) getById(id int64)(product *db.ProductDAO, err error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &productId, &productName, &chainId, &chainCode, &chainName, &tokenSymbol, &tokenName, &price, &priceUnit, &createTime, &updateTime)
 		if err != nil {
 			return (nil, err)
 		}
@@ -52,20 +57,27 @@ func (f *ProductDB) getById(id int64)(product *db.ProductDAO, err error) {
 		return (nil, err)
 	}
 
-	product := &db.ProductDAO{
-		id: id,
-		name: name,
-		desc: desc,
-		imgUrl: imgUrl,
-		nft_id: nftId,
-		tag_ids: tags
+	nft := &db.NftDAO{
+		id : id
+		productId : productId
+		productName : productName
+		chainId : chainId
+		chainCode : chainCode
+		chainName : chainName
+		tokenSymbol : tokenSymbol
+		tokenName : tokenName
+		price : price
+		priceUnit : priceUnit
+		createTime : createTime
+		updateTime :updateTime
 	}
-	return (product, nil)
+	return (nft, nil)
 }
 
-func (f *ProductDB) insert(product *db.ProductDAO)(err error) {
+func (f *ProductDB) insert(product *db.NftDAO)(err error) {
 
-	query := "INSERT INTO product(product_name, desc,imgUrl, nft_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product(product_id, prodect_name, chain_id, chain_code, 
+		chain_name, token_symbol, token_name, price, price_unit, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
     ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
     defer cancelfunc()
     stmt, err := db.PrepareContext(ctx, query)
@@ -90,7 +102,7 @@ func (f *ProductDB) insert(product *db.ProductDAO)(err error) {
 }
 
 
-func (f *ProductDB) update(product *db.ProductDAO) error {
+func (f *NftDB) update(product *db.ProductDAO) error {
 	insForm, err := db.Prepare("UPDATE Prodect SET name=?, city=? WHERE id=?")
 
 	query := "UPDATE Prodect SET product_name=?, desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
@@ -114,18 +126,21 @@ func (f *ProductDB) update(product *db.ProductDAO) error {
 }
 
 
-func (f *ProductDB) getList(limit int64, offset int64)(products []*db.ProductDAO, err error) {
+func (f *NftDB) getList(limit int64, offset int64)(products []*db.ProductDAO, err error) {
 	var (
-		name string
-		desc string
 		id int64
-		imgUrl string
-		nftId int64
-		tags string
+		productId int64
+		productName string
+		chainId int64
+		chainCode string
+		chainName string
+		tokenSymbol string
+		tokenName string
+		price int64
+		priceUnit int64
 		createTime time.Time
 		updateTime time.Time
 	)
-
 	rows, err := db.Query("select id, product_name, desc, imgUrl, nft_id, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
 	
 	if err != nil {
@@ -133,20 +148,26 @@ func (f *ProductDB) getList(limit int64, offset int64)(products []*db.ProductDAO
 	}
 
 	defer rows.Close()
-	products = []
+	nfts = []
 	for rows.Next() {
 		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
 		if err != nil {
 			return (nil, err)
 		}
 
-		product := &db.ProductDAO{
-			id: id,
-			name: name,
-			desc: desc,
-			imgUrl: imgUrl,
-			nft_id: nftId,
-			tag_ids: tags
+		nft := &db.NftDAO{
+			id : id
+			productId : productId
+			productName : productName
+			chainId : chainId
+			chainCode : chainCode
+			chainName : chainName
+			tokenSymbol : tokenSymbol
+			tokenName : tokenName
+			price : price
+			priceUnit : priceUnit
+			createTime : createTime
+			updateTime :updateTime
 		}
 	}
 
@@ -154,5 +175,5 @@ func (f *ProductDB) getList(limit int64, offset int64)(products []*db.ProductDAO
 	if err != nil {
 		return ([], err)
 	}
-	return (products, nil)
+	return (nfts, nil)
 }
