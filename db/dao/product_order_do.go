@@ -1,6 +1,6 @@
 package fanland
 
-type ProductOrderDAO struct {
+type ProductOrderDO struct {
 	id int64
 	productId int64
 	offerId int64

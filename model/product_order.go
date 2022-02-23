@@ -1,3 +1,4 @@
+package fanland
 type ProductOrder struct {
 	id int64
 	product *model.Product

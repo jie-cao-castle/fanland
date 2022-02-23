@@ -1,4 +1,8 @@
+package fanland
+
 type ProductTag struct {
 	name string;
-	id long;
+	id int64;
+	createTime time.Time
+	updateTime time.Time
 }

@@ -1,6 +1,6 @@
 package fanland
 
-type ProductCategoryDAO struct{
+type ProductCategoryDO struct{
     id int64;
 	name string;
 	desc string;

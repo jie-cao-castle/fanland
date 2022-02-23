@@ -1,6 +1,6 @@
 package db
 
-type ProductDAO struct {
+type ProductDO struct {
 	name string
 	desc string
 	id int64
