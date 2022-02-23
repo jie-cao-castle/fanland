@@ -1,10 +1,12 @@
-type Product struct {
+package db
+
+type ProductDAO struct {
 	name string
 	desc string
 	id int64
 	imgUrl string
-	nft *NFT
-	tags []*ProductTag
+	nft_id int64
+	tags string
 	createTime time.Time
 	updateTime time.Time
 }
