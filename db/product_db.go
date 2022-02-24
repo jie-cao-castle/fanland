@@ -1,87 +1,93 @@
+package dao
+
 import (
-	"model"
+	"context"
 	"database/sql"
+	"fanland/db/dao"
 	_ "github.com/go-sql-driver/mysql"
-	"fanland/db/product_db"
 	log "github.com/sirupsen/logrus"
+	"time"
 )
 
 type ProductDB struct {
-
+	db *sql.DB
 }
 
 func (f *ProductDB) init() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
+	f.db = db
 	if err != nil {
 		log.Fatal(err)
+		return err
 	}
-	defer db.Close()
+	return nil
 }
 
-func (f *ProductDB) getById(id int64)(product *db.ProductDAO, err error) {
+func (f *ProductDB) getById(productId int64) (*dao.ProductDO, error) {
 	var (
-		name string
-		desc string
-		id int64
-		imgUrl string
-		nftId int64
-		tags string
+		name       string
+		desc       string
+		id         uint64
+		imgUrl     string
+		nftId      uint64
+		tags       string
 		createTime time.Time
 		updateTime time.Time
 	)
 
-	rows, err := db.Query("select id, product_name, desc, imgUrl, nft_id, tag_ids, create_time, update_time from product where id = ?", id)
-	
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, nft_id, tag_ids, create_time, update_time from product where id = ?", id)
+
 	if err != nil {
-		return (nil, err)
+		return nil, err
 	}
 
 	defer rows.Close()
 	if rows.Next() {
 		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
 		if err != nil {
-			return (nil, err)
+			return nil, err
 		}
 	} else {
-		return (nil, err)
+		return nil, err
 	}
 
 	err = rows.Err()
 	if err != nil {
-		return (nil, err)
+		return nil, err
 	}
 
-	product := &db.ProductDAO{
-		id: id,
-		name: name,
-		desc: desc,
-		imgUrl: imgUrl,
-		nft_id: nftId,
-		tag_ids: tags
+	product := &dao.ProductDO{
+		Id:     id,
+		Name:   name,
+		Desc:   desc,
+		ImgUrl: imgUrl,
+		NftId:  nftId,
+		Tags:   tags,
 	}
-	return (product, nil)
+	return product, nil
 }
 
-func (f *ProductDB) insert(product *db.ProductDAO)(err error) {
+func (f *ProductDB) insert(product *dao.ProductDO) (err error) {
 
 	query := "INSERT INTO product(product_name, desc,imgUrl, nft_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
-    ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancelfunc()
-    stmt, err := db.PrepareContext(ctx, query)
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelfunc()
+	stmt, err := f.db.PrepareContext(ctx, query)
 
-    if err != nil {
-    	return err
-    }
-    defer stmt.Close()
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, product.name, product.desc, product.imgUrl, product.nft_id, product.tag_ids)  
-	if err != nil {  
+	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.NftId, product.Tags)
+	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
 	}
-	rows, err := res.RowsAffected()  
-	if err != nil {  
+
+	_, err = res.RowsAffected()
+	if err != nil {
 		log.Printf("Error %s when finding rows affected", err)
 		return err
 	}
@@ -89,70 +95,68 @@ func (f *ProductDB) insert(product *db.ProductDAO)(err error) {
 	return nil
 }
 
-
-func (f *ProductDB) update(product *db.ProductDAO) error {
-	insForm, err := db.Prepare("UPDATE Prodect SET name=?, city=? WHERE id=?")
+func (f *ProductDB) update(product *dao.ProductDO) error {
 
 	query := "UPDATE Prodect SET product_name=?, desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
-    ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
-	stmt, err := db.PrepareContext(ctx, query)
+	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := stmt.ExecContext(ctx, product.name, product.desc, product.tag_ids, id)
+	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.Tags, product.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	rowCnt, err := res.RowsAffected()
-	if err != nil {
-		log.Fatal(err)
+	if rowCnt != 1 {
+		log.Infof("no update")
 	}
 
 	return err
 }
 
-
-func (f *ProductDB) getList(limit int64, offset int64)(products []*db.ProductDAO, err error) {
+func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error) {
 	var (
-		name string
-		desc string
-		id int64
-		imgUrl string
-		nftId int64
-		tags string
+		name       string
+		desc       string
+		id         uint64
+		imgUrl     string
+		nftId      uint64
+		tags       string
 		createTime time.Time
 		updateTime time.Time
 	)
 
-	rows, err := db.Query("select id, product_name, desc, imgUrl, nft_id, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
-	
+	rows, err := f.db.Query("select id, product_name, desc, imgUrl, nft_id, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
+
 	if err != nil {
-		return (nil, err)
+		return nil, err
 	}
 
 	defer rows.Close()
-	products = []
+	var products []*dao.ProductDO
 	for rows.Next() {
 		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
 		if err != nil {
-			return (nil, err)
+			return nil, err
 		}
 
-		product := &db.ProductDAO{
-			id: id,
-			name: name,
-			desc: desc,
-			imgUrl: imgUrl,
-			nft_id: nftId,
-			tag_ids: tags
+		product := &dao.ProductDO{
+			Id:     id,
+			Name:   name,
+			Desc:   desc,
+			ImgUrl: imgUrl,
+			NftId:  nftId,
+			Tags:   tags,
 		}
+
+		products = append(products, product)
 	}
-
 	err = rows.Err()
 	if err != nil {
-		return ([], err)
+		return products, err
 	}
-	return (products, nil)
+	return products, nil
 }
