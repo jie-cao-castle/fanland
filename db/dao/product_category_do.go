@@ -3,9 +3,9 @@ package dao
 import "time"
 
 type ProductCategoryDO struct {
-	id         uint64
-	name       string
-	desc       string
-	createTime time.Time
-	updateTime time.Time
+	Id         uint64
+	Name       string
+	Desc       string
+	CreateTime time.Time
+	UpdateTime time.Time
 }

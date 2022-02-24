@@ -1,8 +1,12 @@
 package dao
 
+import "time"
+
 type ChainTokenDO struct {
-	id          uint64
-	tokenSymbol string
-	tokenName   string
-	tokenDesc   string
+	Id          uint64
+	TokenSymbol string
+	TokenName   string
+	TokenDesc   string
+	CreateTime  time.Time
+	UpdateTime  time.Time
 }

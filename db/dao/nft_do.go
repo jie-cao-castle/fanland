@@ -11,7 +11,7 @@ type NftDO struct {
 	ChainName   string
 	TokenSymbol string
 	TokenName   string
-	Price       int64
+	Price       uint64
 	PriceUnit   uint64
 	CreateTime  time.Time
 	UpdateTime  time.Time

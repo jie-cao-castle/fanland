@@ -3,12 +3,12 @@ package dao
 import "time"
 
 type ProductOfferDO struct {
-	id         int64
-	productId  int64
-	offerId    int64
-	nftId      int64
-	price      int64
-	nftUnit    int64
-	createTime time.Time
-	updateTime time.Time
+	Id         int64
+	ProductId  int64
+	OfferId    int64
+	NftId      int64
+	Price      int64
+	NftUnit    int64
+	CreateTime time.Time
+	UpdateTime time.Time
 }
