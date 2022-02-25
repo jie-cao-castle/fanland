@@ -13,7 +13,7 @@ type NftDB struct {
 	db *sql.DB
 }
 
-func (f *NftDB) init() error {
+func (f *NftDB) Init() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	if err != nil {
@@ -22,6 +22,10 @@ func (f *NftDB) init() error {
 	}
 	defer db.Close()
 	return nil
+}
+
+func (f *NftDB) Close() error {
+	return f.db.Close()
 }
 
 func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {

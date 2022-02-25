@@ -13,14 +13,18 @@ type ChainNetDB struct {
 	db *sql.DB
 }
 
-func (f *ChainNetDB) init() error {
+func (f *ChainNetDB) Close() error {
+	return f.db.Close()
+}
+
+func (f *ChainNetDB) Init() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-	defer db.Close()
+	f.db = db
 	return nil
 }
 

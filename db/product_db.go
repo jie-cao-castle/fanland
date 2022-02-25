@@ -24,6 +24,10 @@ func (f *ProductDB) Init() error {
 	return nil
 }
 
+func (f *ProductDB) Close() error {
+	return f.db.Close()
+}
+
 func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 	var (
 		name       string

@@ -5,6 +5,6 @@ import (
 	"fanland/model"
 )
 
-func ConvertToProduct(productDO *dao.ProductDO) *model.Product {
+func ConvertToProduct(productDO *dao.ProductDO, nftDO *dao.NftDO, tags []*dao.ProductTagDO) *model.Product {
 	return nil
 }
