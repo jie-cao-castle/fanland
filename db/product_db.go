@@ -13,7 +13,7 @@ type ProductDB struct {
 	db *sql.DB
 }
 
-func (f *ProductDB) init() error {
+func (f *ProductDB) Init() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	f.db = db
@@ -24,7 +24,7 @@ func (f *ProductDB) init() error {
 	return nil
 }
 
-func (f *ProductDB) getById(productId int64) (*dao.ProductDO, error) {
+func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 	var (
 		name       string
 		desc       string
@@ -43,6 +43,7 @@ func (f *ProductDB) getById(productId int64) (*dao.ProductDO, error) {
 	}
 
 	defer rows.Close()
+	defer f.db.Close()
 	if rows.Next() {
 		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
 		if err != nil {
