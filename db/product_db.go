@@ -10,10 +10,15 @@ import (
 )
 
 type ProductDB struct {
-	db *sql.DB
+	db     *sql.DB
+	dbName string
 }
 
-func (f *ProductDB) Init() error {
+func (f *ProductDB) InitDB(dbName string) {
+	f.dbName = dbName
+}
+
+func (f *ProductDB) Open() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	f.db = db

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fanland/server"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -8,11 +9,16 @@ import (
 )
 
 type AuthService struct {
+	options *server.ServerOptions
 }
 
 const (
 	userkey = "user"
 )
+
+func (s *AuthService) InitService(options *server.ServerOptions) {
+	s.options = options
+}
 
 // AuthRequired is a simple middleware to check the session
 func (s *AuthService) AuthRequired(c *gin.Context) {

@@ -4,6 +4,7 @@ import (
 	"fanland/db"
 	"fanland/db/converter"
 	"fanland/model"
+	"fanland/server"
 	"strconv"
 	"strings"
 )
@@ -16,17 +17,24 @@ type ProductManager struct {
 	productCategoryDB *dao.ProductCategoryDB
 	productOrderDB    *dao.ProductOrderDB
 	productTagDB      *dao.ProductTagDB
+	options           *server.ServerOptions
+}
+
+func (manager *ProductManager) InitManager(options *server.ServerOptions) {
+	manager.options = options
+	manager.productDB.InitDB(options.DbName)
+	manager.nftDB.InitDB(options.DbName)
 }
 
 func (manager *ProductManager) GetProduct(productId uint64) (*model.Product, error) {
-	manager.productDB.Init()
+	manager.productDB.Open()
 	defer manager.productDB.Close()
 	product, err := manager.productDB.GetById(productId)
 	if err != nil {
 		return nil, err
 	}
 
-	manager.nftDB.Init()
+	manager.nftDB.Open()
 	defer manager.nftDB.Close()
 	manager.nftDB.Close()
 	nft, err := manager.nftDB.GetById(product.NftId)

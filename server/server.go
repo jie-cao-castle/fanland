@@ -19,24 +19,30 @@ const (
 type Server struct {
 	options *ServerOptions
 	engine  *gin.Engine
-	auth    *service.AuthService
 	srv     *http.Server
 	DoneCh  chan bool
+
+	authService    *service.AuthService
+	productService *service.ProductService
 }
 
-func (s *Server) Init() *gin.Engine {
+func (s *Server) Init(options *ServerOptions) *gin.Engine {
+	s.options = options
 	r := gin.New()
 	r.Use(sessions.Sessions("mysession", sessions.NewCookieStore([]byte("secret"))))
 
+	// Initialize all services
 	s.initService()
-	r.POST("/login", s.auth.Login)
-	r.GET("/logout", s.auth.Logout)
+
+	// router
+	r.POST("/login", s.authService.Login)
+	r.GET("/logout", s.authService.Logout)
 
 	private := r.Group("/private")
-	private.Use(s.auth.AuthRequired)
+	private.Use(s.authService.AuthRequired)
 	{
-		private.GET("/me", s.auth.Me)
-		private.GET("/status", s.auth.Status)
+		private.GET("/me", s.authService.Me)
+		private.GET("/status", s.authService.Status)
 	}
 	s.engine = r
 	s.DoneCh = make(chan bool, 1)
@@ -80,5 +86,9 @@ func (s *Server) Stop() error {
 }
 
 func (s *Server) initService() {
+	s.authService = &service.AuthService{}
+	s.authService.InitService(s.options)
 
+	s.productService = &service.ProductService{}
+	s.productService.InitService(s.options)
 }

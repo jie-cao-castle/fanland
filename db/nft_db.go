@@ -10,10 +10,15 @@ import (
 )
 
 type NftDB struct {
-	db *sql.DB
+	db     *sql.DB
+	dbName string
 }
 
-func (f *NftDB) Init() error {
+func (f *NftDB) InitDB(dbName string) {
+	f.dbName = dbName
+}
+
+func (f *NftDB) Open() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/fanland")
 	if err != nil {
