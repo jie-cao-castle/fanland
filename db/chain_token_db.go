@@ -11,6 +11,7 @@ import (
 
 type ChainTokenDB struct {
 	db *sql.DB
+	DB
 }
 
 func (f *ChainTokenDB) init() error {

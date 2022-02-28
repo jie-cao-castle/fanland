@@ -12,6 +12,7 @@ import (
 
 type ProductTagDB struct {
 	db *sql.DB
+	DB
 }
 
 func (f *ProductTagDB) Init() error {

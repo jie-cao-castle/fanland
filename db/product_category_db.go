@@ -11,6 +11,7 @@ import (
 
 type ProductCategoryDB struct {
 	db *sql.DB
+	DB
 }
 
 func (f *ProductCategoryDB) init() error {

@@ -10,12 +10,8 @@ import (
 )
 
 type NftDB struct {
-	db     *sql.DB
-	dbName string
-}
-
-func (f *NftDB) InitDB(dbName string) {
-	f.dbName = dbName
+	db *sql.DB
+	DB
 }
 
 func (f *NftDB) Open() error {

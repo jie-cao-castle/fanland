@@ -10,12 +10,8 @@ import (
 )
 
 type ProductDB struct {
-	db     *sql.DB
-	dbName string
-}
-
-func (f *ProductDB) InitDB(dbName string) {
-	f.dbName = dbName
+	db *sql.DB
+	DB
 }
 
 func (f *ProductDB) Open() error {

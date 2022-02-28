@@ -11,6 +11,7 @@ import (
 
 type ChainNetDB struct {
 	db *sql.DB
+	DB
 }
 
 func (f *ChainNetDB) Close() error {
