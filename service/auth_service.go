@@ -7,7 +7,7 @@ import (
 	"strings"
 )
 
-type Auth struct {
+type AuthService struct {
 }
 
 const (
@@ -15,7 +15,7 @@ const (
 )
 
 // AuthRequired is a simple middleware to check the session
-func (s *Auth) AuthRequired(c *gin.Context) {
+func (s *AuthService) AuthRequired(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
 	if user == nil {
@@ -28,7 +28,7 @@ func (s *Auth) AuthRequired(c *gin.Context) {
 }
 
 // login is a handler that parses a form and checks for specific data
-func (s *Auth) Login(c *gin.Context) {
+func (s *AuthService) Login(c *gin.Context) {
 	session := sessions.Default(c)
 	username := c.PostForm("username")
 	password := c.PostForm("password")
@@ -54,7 +54,7 @@ func (s *Auth) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully authenticated user"})
 }
 
-func (s *Auth) Logout(c *gin.Context) {
+func (s *AuthService) Logout(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
 	if user == nil {
@@ -69,12 +69,12 @@ func (s *Auth) Logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
 }
 
-func (s *Auth) Me(c *gin.Context) {
+func (s *AuthService) Me(c *gin.Context) {
 	session := sessions.Default(c)
 	user := session.Get(userkey)
 	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
-func (s *Auth) Status(c *gin.Context) {
+func (s *AuthService) Status(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"status": "You are logged in"})
 }

@@ -1,4 +1,4 @@
-package fanland
+package manager
 
 import (
 	"fanland/db"

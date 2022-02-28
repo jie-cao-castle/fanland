@@ -19,8 +19,9 @@ const (
 type Server struct {
 	options *ServerOptions
 	engine  *gin.Engine
-	auth    *service.Auth
+	auth    *service.AuthService
 	srv     *http.Server
+	DoneCh  chan bool
 }
 
 func (s *Server) Init() *gin.Engine {
@@ -38,6 +39,7 @@ func (s *Server) Init() *gin.Engine {
 		private.GET("/status", s.auth.Status)
 	}
 	s.engine = r
+	s.DoneCh = make(chan bool, 1)
 	return r
 }
 
@@ -54,8 +56,6 @@ func (s *Server) Start() (chan os.Signal, error) {
 		}
 	}()
 
-	// Wait for interrupt signal to gracefully shutdown the server with
-	// a timeout of 5 seconds.
 	quit := make(chan os.Signal)
 
 	return quit, nil
@@ -75,7 +75,7 @@ func (s *Server) Stop() error {
 	}
 
 	log.Println("Server exiting")
-
+	s.DoneCh <- true
 	return nil
 }
 
