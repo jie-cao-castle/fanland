@@ -1,10 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/contrib/sessions"
-	"github.com/gin-gonic/gin"
-	"net/http"
-	"strings"
+	"fanland/server"
+	log "github.com/sirupsen/logrus"
+	"os/signal"
+	"syscall"
 )
 
 const (
@@ -12,91 +12,17 @@ const (
 )
 
 func main() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong",
-		})
-	})
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
-}
-
-func engine() *gin.Engine {
-	r := gin.New()
-	r.Use(sessions.Sessions("mysession", sessions.NewCookieStore([]byte("secret"))))
-	r.POST("/login", login)
-	r.GET("/logout", logout)
-
-	private := r.Group("/private")
-	private.Use(AuthRequired)
-	{
-		private.GET("/me", me)
-		private.GET("/status", status)
-	}
-	return r
-}
-
-// AuthRequired is a simple middleware to check the session
-func AuthRequired(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(userkey)
-	if user == nil {
-		// Abort the request with the appropriate error code
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "unauthorized"})
-		return
-	}
-	// Continue down the chain to handler etc
-	c.Next()
-}
-
-// login is a handler that parses a form and checks for specific data
-func login(c *gin.Context) {
-	session := sessions.Default(c)
-	username := c.PostForm("username")
-	password := c.PostForm("password")
-
-	// Validate form input
-	if strings.Trim(username, " ") == "" || strings.Trim(password, " ") == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Parameters can't be empty"})
+	srv := server.Server{}
+	srvCh, err := srv.Start()
+	if err != nil {
 		return
 	}
 
-	// Check for username and password match, usually from a database
-	if username != "hello" || password != "itsme" {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Authentication failed"})
-		return
-	}
-
-	// Save the username in the session
-	session.Set(userkey, username) // In real world usage you'd set this to the users ID
-	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully authenticated user"})
-}
-
-func logout(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(userkey)
-	if user == nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid session token"})
-		return
-	}
-	session.Delete(userkey)
-	if err := session.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save session"})
-		return
-	}
-	c.JSON(http.StatusOK, gin.H{"message": "Successfully logged out"})
-}
-
-func me(c *gin.Context) {
-	session := sessions.Default(c)
-	user := session.Get(userkey)
-	c.JSON(http.StatusOK, gin.H{"user": user})
-}
-
-func status(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "You are logged in"})
+	// kill (no param) default send syscall.SIGTERM
+	// kill -2 is syscall.SIGINT
+	// kill -9 is syscall.SIGKILL but can't be caught, so don't need to add it
+	signal.Notify(srvCh, syscall.SIGINT, syscall.SIGTERM)
+	<-srvCh
+	log.Println("Shutting down server...")
+	srv.Stop()
 }
