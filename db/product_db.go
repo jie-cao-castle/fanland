@@ -6,6 +6,7 @@ import (
 	"fanland/db/dao"
 	_ "github.com/go-sql-driver/mysql"
 	log "github.com/sirupsen/logrus"
+	"strings"
 	"time"
 )
 
@@ -155,6 +156,51 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 		}
 
 		products = append(products, product)
+	}
+	err = rows.Err()
+	if err != nil {
+		return products, err
+	}
+	return products, nil
+}
+
+func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
+	var (
+		name       string
+		desc       string
+		id         uint64
+		imgUrl     string
+		nftId      uint64
+		tags       string
+		createTime time.Time
+		updateTime time.Time
+	)
+
+	args := make([]interface{}, len(ids))
+	for i, id := range ids {
+		args[i] = id
+	}
+
+	rows, err := f.db.Query("select id, tag_name, create_time, update_time from product_tag WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
+	defer rows.Close()
+	if err != nil {
+		return nil, err
+	}
+	var products []*dao.ProductDO
+	for rows.Next() {
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		if err != nil {
+			return nil, err
+		}
+
+		tag := &dao.ProductDO{
+			Id:         id,
+			Name:       name,
+			CreateTime: createTime,
+			UpdateTime: updateTime,
+		}
+
+		products = append(products, tag)
 	}
 	err = rows.Err()
 	if err != nil {

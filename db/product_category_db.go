@@ -13,7 +13,7 @@ type ProductCategoryDB struct {
 	DB
 }
 
-func (f *ProductCategoryDB) init() error {
+func (f *ProductCategoryDB) Open() error {
 	db, err := sql.Open("mysql",
 		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
