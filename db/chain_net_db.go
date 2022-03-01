@@ -10,17 +10,12 @@ import (
 )
 
 type ChainNetDB struct {
-	db *sql.DB
 	DB
-}
-
-func (f *ChainNetDB) Close() error {
-	return f.db.Close()
 }
 
 func (f *ChainNetDB) Init() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/fanland")
+		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	if err != nil {
 		log.Fatal(err)
 		return err
@@ -38,7 +33,7 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, chain_code, chain_name, create_time, update_time from nft where id = ?", id)
+	rows, err := f.db.Query("select id, chain_code, chain_name, create_time, update_time from chain_net where id = ?", id)
 
 	if err != nil {
 		return nil, err
@@ -71,7 +66,7 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 
 func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
 
-	query := "INSERT INTO nft(chain_code, chain_name, create_time, update_time) " +
+	query := "INSERT INTO chain_net(chain_code, chain_name, create_time, update_time) " +
 		"VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
@@ -84,13 +79,13 @@ func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
 
 	res, err := stmt.ExecContext(ctx, nft.ChainCode, nft.ChainName)
 	if err != nil {
-		log.Printf("Error %s when inserting row into products table", err)
+		log.Infof("Error %s when inserting row into chain net table", err)
 		return err
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		log.Printf("Error %s when finding rows affected", err)
+		log.Infof("Error %s when finding rows affected", err)
 		return err
 	}
 
@@ -103,20 +98,24 @@ func (f *ChainNetDB) update(chainNet *dao.ChainNetDO) error {
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 	res, err := stmt.ExecContext(ctx, chainNet.ChainCode, chainNet.ChainName, chainNet.Id)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 
 	rowCnt, err := res.RowsAffected()
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 
 	if rowCnt != 1 {
-		log.Infof("no update")
+		log.Info("no update")
+		return nil
 	}
 
 	return err
@@ -130,7 +129,7 @@ func (f *ChainNetDB) getList(limit int64, offset int64) ([]*dao.ChainNetDO, erro
 		createTime time.Time
 		updateTime time.Time
 	)
-	rows, err := f.db.Query("select id, chain_code, chain_name, create_time, update_time from nft LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, chain_code, chain_name, create_time, update_time from chain_net LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err

@@ -10,23 +10,18 @@ import (
 )
 
 type NftDB struct {
-	db *sql.DB
 	DB
 }
 
 func (f *NftDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/fanland")
+		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
 	defer db.Close()
 	return nil
-}
-
-func (f *NftDB) Close() error {
-	return f.db.Close()
 }
 
 func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {
@@ -45,7 +40,7 @@ func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {
 		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_id, prodect_name, chain_id, chain_code, chain_name, token_symbol, token_name, price, price_unit, create_time, update_time from nft where id = ?", id)
+	rows, err := f.db.Query("select id, product_id, product_name, chain_id, chain_code, chain_name, token_symbol, token_name, price, price_unit, create_time, update_time from nft where id = ?", id)
 
 	if err != nil {
 		return nil, err
@@ -85,7 +80,7 @@ func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {
 
 func (f *NftDB) insert(nft *dao.NftDO) (err error) {
 
-	query := "INSERT INTO nft(product_id, prodect_name, chain_id, chain_code, chain_name, token_symbol, token_name, " +
+	query := "INSERT INTO nft(product_id, product_name, chain_id, chain_code, chain_name, token_symbol, token_name, " +
 		"price, price_unit, create_time, update_time) " +
 		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -97,16 +92,16 @@ func (f *NftDB) insert(nft *dao.NftDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, nft.ProductId, nft.ProductName, nft.ChainId, nft.ChainCode, nft.ChainCode,
+	res, err := stmt.ExecContext(ctx, nft.ProductId, nft.ProductName, nft.ChainId, nft.ChainCode, nft.ChainName,
 		nft.TokenSymbol, nft.TokenName, nft.Price, nft.PriceUnit)
 	if err != nil {
-		log.Printf("Error %s when inserting row into products table", err)
+		log.Errorf("Error %s when inserting row into products table", err)
 		return err
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		log.Printf("Error %s when finding rows affected", err)
+		log.Errorf("Error %s when finding rows affected", err)
 		return err
 	}
 

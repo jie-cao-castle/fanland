@@ -10,13 +10,12 @@ import (
 )
 
 type ProductCategoryDB struct {
-	db *sql.DB
 	DB
 }
 
 func (f *ProductCategoryDB) init() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/fanland")
+		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
@@ -34,7 +33,7 @@ func (f *ProductCategoryDB) getById(productId int64) (*dao.ProductCategoryDO, er
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, category_name, category_desc ,create_time, update_time from product_category where id = ?", id)
+	rows, err := f.db.Query("select id, category_name, category_desc ,create_time, update_time from product_category where id = ?", productId)
 
 	if err != nil {
 		return nil, err
@@ -56,9 +55,11 @@ func (f *ProductCategoryDB) getById(productId int64) (*dao.ProductCategoryDO, er
 	}
 
 	product := &dao.ProductCategoryDO{
-		Id:   id,
-		Name: name,
-		Desc: desc,
+		Id:         id,
+		Name:       name,
+		Desc:       desc,
+		CreateTime: createTime,
+		UpdateTime: updateTime,
 	}
 	return product, nil
 }
@@ -99,7 +100,7 @@ func (f *ProductCategoryDB) update(category *dao.ProductCategoryDO) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := stmt.ExecContext(ctx, category.Name, category.Desc)
+	res, err := stmt.ExecContext(ctx, category.Name, category.Desc, category.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -124,7 +125,7 @@ func (f *ProductCategoryDB) getList(limit int64, offset int64) ([]*dao.ProductCa
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, category_name,category_desc, create_time, update_time from product_category LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, category_name, category_desc, create_time, update_time from product_category LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -139,9 +140,11 @@ func (f *ProductCategoryDB) getList(limit int64, offset int64) ([]*dao.ProductCa
 		}
 
 		category := &dao.ProductCategoryDO{
-			Id:   id,
-			Name: name,
-			Desc: desc,
+			Id:         id,
+			Name:       name,
+			Desc:       desc,
+			CreateTime: createTime,
+			UpdateTime: updateTime,
 		}
 
 		categories = append(categories, category)

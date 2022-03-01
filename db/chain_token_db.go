@@ -10,13 +10,12 @@ import (
 )
 
 type ChainTokenDB struct {
-	db *sql.DB
 	DB
 }
 
 func (f *ChainTokenDB) init() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/fanland")
+		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
@@ -35,7 +34,7 @@ func (f *ChainTokenDB) GetById(tokenId uint64) (*dao.ChainTokenDO, error) {
 		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, token_symbol, token_name, token_desc, create_time, update_time from product where id = ?", tokenId)
+	rows, err := f.db.Query("select id, token_symbol, token_name, token_desc, create_time, update_time from chain_token where id = ?", tokenId)
 
 	if err != nil {
 		return nil, err
@@ -43,7 +42,7 @@ func (f *ChainTokenDB) GetById(tokenId uint64) (*dao.ChainTokenDO, error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&id, &tokenSymbol, &tokenName, &createTime, &updateTime)
+		err := rows.Scan(&id, &tokenSymbol, &tokenName, &tokenDesc, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -69,7 +68,7 @@ func (f *ChainTokenDB) GetById(tokenId uint64) (*dao.ChainTokenDO, error) {
 
 func (f *ChainTokenDB) insert(token *dao.ChainTokenDO) (err error) {
 
-	query := "INSERT INTO product(token_symbol, token_name, token_desc, create_time, update_time) VALUES (?, ?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO chain_token(token_symbol, token_name, token_desc, create_time, update_time) VALUES (?, ?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -81,13 +80,13 @@ func (f *ChainTokenDB) insert(token *dao.ChainTokenDO) (err error) {
 
 	res, err := stmt.ExecContext(ctx, token.TokenSymbol, token.TokenName, token.TokenDesc)
 	if err != nil {
-		log.Printf("Error %s when inserting row into products table", err)
+		log.Errorf("Error %s when inserting row into products table", err)
 		return err
 	}
 
 	_, err = res.RowsAffected()
 	if err != nil {
-		log.Printf("Error %s when finding rows affected", err)
+		log.Errorf("Error %s when finding rows affected", err)
 		return err
 	}
 
@@ -96,21 +95,24 @@ func (f *ChainTokenDB) insert(token *dao.ChainTokenDO) (err error) {
 
 func (f *ChainTokenDB) update(token *dao.ChainTokenDO) error {
 
-	query := "UPDATE Prodect SET token_symbol=?, token_name=?, token_desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE chain_token SET token_symbol=?, token_name=?, token_desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 	res, err := stmt.ExecContext(ctx, token.TokenSymbol, token.TokenName, token.TokenDesc, token.Id)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 
 	rowCnt, err := res.RowsAffected()
 	if rowCnt != 1 {
-		log.Infof("no update")
+		log.Info("no update")
+		return err
 	}
 
 	return err
@@ -135,7 +137,7 @@ func (f *ChainTokenDB) getList(limit int64, offset int64) ([]*dao.ChainTokenDO, 
 	defer rows.Close()
 	var tokens []*dao.ChainTokenDO
 	for rows.Next() {
-		err := rows.Scan(&id, &tokenSymbol, &tokenName, &createTime, &updateTime)
+		err := rows.Scan(&id, &tokenSymbol, &tokenName, &tokenDesc, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}

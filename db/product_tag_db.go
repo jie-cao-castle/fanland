@@ -11,13 +11,12 @@ import (
 )
 
 type ProductTagDB struct {
-	db *sql.DB
 	DB
 }
 
 func (f *ProductTagDB) Init() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/fanland")
+		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
@@ -30,7 +29,7 @@ func (f *ProductTagDB) Close() error {
 	return f.db.Close()
 }
 
-func (f *ProductTagDB) GetById(productId int64) (*dao.ProductTagDO, error) {
+func (f *ProductTagDB) GetById(tagId int64) (*dao.ProductTagDO, error) {
 	var (
 		name       string
 		id         uint64
@@ -38,7 +37,7 @@ func (f *ProductTagDB) GetById(productId int64) (*dao.ProductTagDO, error) {
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, category_name, create_time, update_time from product_category where id = ?", id)
+	rows, err := f.db.Query("select id, tag_name, create_time, update_time from product_tag where id = ?", tagId)
 
 	if err != nil {
 		return nil, err
@@ -60,15 +59,17 @@ func (f *ProductTagDB) GetById(productId int64) (*dao.ProductTagDO, error) {
 	}
 
 	product := &dao.ProductTagDO{
-		Id:   id,
-		Name: name,
+		Id:         id,
+		Name:       name,
+		CreateTime: createTime,
+		UpdateTime: updateTime,
 	}
 	return product, nil
 }
 
 func (f *ProductTagDB) insert(tag *dao.ProductTagDO) (err error) {
 
-	query := "INSERT INTO product_category (category_name, category_desc, create_time, update_time) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product_tag (tag_name, create_time, update_time) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -93,18 +94,20 @@ func (f *ProductTagDB) insert(tag *dao.ProductTagDO) (err error) {
 	return nil
 }
 
-func (f *ProductTagDB) update(category *dao.ProductTagDO) error {
+func (f *ProductTagDB) update(tag *dao.ProductTagDO) error {
 
-	query := "UPDATE product_category SET category_name=?, category_desc=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE product_tag SET tag_name=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
-	res, err := stmt.ExecContext(ctx, category.Name)
+	res, err := stmt.ExecContext(ctx, tag.Name)
 	if err != nil {
-		log.Fatal(err)
+		log.Error(err)
+		return err
 	}
 
 	rowCnt, err := res.RowsAffected()
@@ -123,7 +126,7 @@ func (f *ProductTagDB) getList(limit int64, offset int64) ([]*dao.ProductTagDO, 
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, category_name,category_desc, create_time, update_time from product_category LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, tag_name, create_time, update_time from product_tag LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -138,8 +141,10 @@ func (f *ProductTagDB) getList(limit int64, offset int64) ([]*dao.ProductTagDO, 
 		}
 
 		tag := &dao.ProductTagDO{
-			Id:   id,
-			Name: name,
+			Id:         id,
+			Name:       name,
+			CreateTime: createTime,
+			UpdateTime: updateTime,
 		}
 
 		tags = append(tags, tag)
@@ -164,21 +169,23 @@ func (f *ProductTagDB) GetListByIds(ids []uint64) ([]*dao.ProductTagDO, error) {
 		args[i] = id
 	}
 
-	rows, err := f.db.Query("select id, category_name,category_desc, create_time, update_time from product_category WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
+	rows, err := f.db.Query("select id, tag_name, create_time, update_time from product_tag WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
 	var tags []*dao.ProductTagDO
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
 
 		tag := &dao.ProductTagDO{
-			Id:   id,
-			Name: name,
+			Id:         id,
+			Name:       name,
+			CreateTime: createTime,
+			UpdateTime: updateTime,
 		}
 
 		tags = append(tags, tag)
