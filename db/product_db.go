@@ -69,7 +69,7 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 	return product, nil
 }
 
-func (f *ProductDB) insert(product *dao.ProductDO) (err error) {
+func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 
 	query := "INSERT INTO product(product_name, product_desc,imgUrl, nft_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -96,7 +96,7 @@ func (f *ProductDB) insert(product *dao.ProductDO) (err error) {
 	return nil
 }
 
-func (f *ProductDB) update(product *dao.ProductDO) error {
+func (f *ProductDB) Update(product *dao.ProductDO) error {
 
 	query := "UPDATE product SET product_name=?, desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)

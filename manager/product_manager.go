@@ -27,6 +27,20 @@ func (manager *ProductManager) InitManager(options *server.ServerOptions) {
 	manager.nftDB.InitDB(options.DbName)
 }
 
+func (manager *ProductManager) AddProduct(product *model.Product) error {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO := converter.ConvertToProductDO(product)
+	return manager.productDB.Insert(productDO)
+}
+
+func (manager *ProductManager) UpdateProduct(product *model.Product) error {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO := converter.ConvertToProductDO(product)
+	return manager.productDB.Update(productDO)
+}
+
 func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Product, error) {
 	manager.productDB.Open()
 	defer manager.productDB.Close()
