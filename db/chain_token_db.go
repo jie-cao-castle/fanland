@@ -67,9 +67,9 @@ func (f *ChainTokenDB) GetById(tokenId uint64) (*dao.ChainTokenDO, error) {
 	return token, nil
 }
 
-func (f *ChainTokenDB) insert(product *dao.ProductDO) (err error) {
+func (f *ChainTokenDB) insert(token *dao.ChainTokenDO) (err error) {
 
-	query := "INSERT INTO product(product_name, desc,imgUrl, nft_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product(token_symbol, token_name, token_desc, create_time, update_time) VALUES (?, ?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -79,7 +79,7 @@ func (f *ChainTokenDB) insert(product *dao.ProductDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.NftId, product.Tags)
+	res, err := stmt.ExecContext(ctx, token.TokenSymbol, token.TokenName, token.TokenDesc)
 	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
@@ -94,16 +94,16 @@ func (f *ChainTokenDB) insert(product *dao.ProductDO) (err error) {
 	return nil
 }
 
-func (f *ChainTokenDB) update(product *dao.ProductDO) error {
+func (f *ChainTokenDB) update(token *dao.ChainTokenDO) error {
 
-	query := "UPDATE Prodect SET product_name=?, desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE Prodect SET token_symbol=?, token_name=?, token_desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.Tags, product.Id)
+	res, err := stmt.ExecContext(ctx, token.TokenSymbol, token.TokenName, token.TokenDesc, token.Id)
 	if err != nil {
 		log.Fatal(err)
 	}

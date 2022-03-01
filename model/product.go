@@ -7,7 +7,8 @@ type Product struct {
 	desc       string
 	id         uint64
 	imgUrl     string
-	nft        *NFT
+	authorId   uint64
+	nft        *NftSku
 	tags       []*ProductTag
 	createTime time.Time
 	updateTime time.Time

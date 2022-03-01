@@ -71,7 +71,7 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 
 func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
 
-	query := "INSERT INTO nft(chain_code, chain_name create_time, update_time) " +
+	query := "INSERT INTO nft(chain_code, chain_name, create_time, update_time) " +
 		"VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
