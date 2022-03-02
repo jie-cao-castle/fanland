@@ -1,6 +1,7 @@
 package service
 
 import (
+	"fanland/db/converter"
 	"fanland/manager"
 	"fanland/model"
 	"fanland/server"
@@ -18,10 +19,6 @@ type ProductService struct {
 func (s *ProductService) InitService(options *server.ServerOptions) {
 	s.options = options
 	s.productManager = &manager.ProductManager{}
-}
-
-func (s *ProductService) AddProduct(product *model.Product) error {
-	return s.productManager.AddProduct(product)
 }
 
 func (s *ProductService) UpdateProduct(product *model.Product) error {
@@ -43,6 +40,25 @@ func (s *ProductService) GetProductById(c *gin.Context) {
 	var product *model.Product
 	var err error
 	if product, err = s.productManager.GetProductDetails(req.ProductId); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: product}
+	c.JSON(http.StatusOK, res)
+}
+
+func (s *ProductService) AddProduct(c *gin.Context) {
+	var req request.AddProductRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var product *model.Product
+	product = converter.ConvertReqToProduct(&req)
+	if err := s.productManager.AddProduct(product); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}

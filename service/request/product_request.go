@@ -12,3 +12,11 @@ type ListRequest struct {
 	Offset uint64 `json:"offset"`
 	Limit  uint64 `json:"limit"`
 }
+
+type AddProductRequest struct {
+	Name        string `json:"name"`
+	ProductDesc string `json:"productDesc"`
+	Id          uint64 `json:"id"`
+	ImgUrl      string `json:"i''"`
+	AuthorId    uint64 `json:"authorId"`
+}
