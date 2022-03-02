@@ -7,3 +7,8 @@ type ProductByIdRequest struct {
 type ProductsByCategoryIdRequest struct {
 	CategoryId uint64 `json:"categoryId"`
 }
+
+type ListRequest struct {
+	Offset uint64 `json:"offset"`
+	Limit  uint64 `json:"limit"`
+}

@@ -22,8 +22,9 @@ type Server struct {
 	srv     *http.Server
 	DoneCh  chan bool
 
-	authService    *service.AuthService
-	productService *service.ProductService
+	authService     *service.AuthService
+	productService  *service.ProductService
+	categoryService *service.CategoryService
 }
 
 func (s *Server) Init(options *ServerOptions) *gin.Engine {
@@ -37,7 +38,8 @@ func (s *Server) Init(options *ServerOptions) *gin.Engine {
 	// router
 	r.POST("/products/details", s.productService.GetProductById)
 	r.POST("/products/category", s.productService.GetProductsByCategoryId)
-
+	r.POST("/category/list", s.categoryService.GetProductCategories)
+	
 	r.POST("/login", s.authService.Login)
 	r.GET("/logout", s.authService.Logout)
 

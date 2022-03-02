@@ -113,7 +113,7 @@ func (f *ProductCategoryDB) update(category *dao.ProductCategoryDO) error {
 	return err
 }
 
-func (f *ProductCategoryDB) getList(limit int64, offset int64) ([]*dao.ProductCategoryDO, error) {
+func (f *ProductCategoryDB) GetList(limit uint64, offset uint64) ([]*dao.ProductCategoryDO, error) {
 	var (
 		name       string
 		desc       string
