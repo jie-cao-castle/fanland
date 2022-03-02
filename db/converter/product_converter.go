@@ -25,3 +25,7 @@ func ConvertReqToProductTag(req *request.AddProductTagRequest) *model.ProductTag
 func ConvertToProductTagDO(tag *model.ProductTag) *dao.ProductTagDO {
 	return nil
 }
+
+func ConvertToProductTag(tagDO *dao.ProductTagDO) *model.ProductTag {
+	return nil
+}

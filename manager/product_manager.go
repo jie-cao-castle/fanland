@@ -17,6 +17,7 @@ type ProductManager struct {
 	productCategoryDB    *dao.ProductCategoryDB
 	productOrderDB       *dao.ProductOrderDB
 	productTagDB         *dao.ProductTagDB
+	productTagRelDB      *dao.ProductTagRelDB
 	productCategoryRelDB *dao.ProductCategoryRelDB
 	options              *server.ServerOptions
 }
@@ -95,6 +96,29 @@ func (manager *ProductManager) GetProductsByCategory(categoryId uint64) ([]*mode
 	}
 
 	return products, nil
+}
+
+func (manager *ProductManager) GetProductTagsByProductId(productId uint64) ([]*model.ProductTag, error) {
+	manager.productTagRelDB.Open()
+	defer manager.productTagRelDB.Close()
+	productTagRels, err := manager.productTagRelDB.GetListByProductId(productId)
+	if err != nil {
+		return nil, err
+	}
+
+	var productIds []uint64
+	for _, productTagRel := range productTagRels {
+		productIds = append(productIds, productTagRel.ProductId)
+	}
+
+	productTagDOs, err := manager.productTagDB.GetListByIds(productIds)
+	var productTags []*model.ProductTag
+	for _, productTagDO := range productTagDOs {
+		productTag := converter.ConvertToProductTag(productTagDO)
+		productTags = append(productTags, productTag)
+	}
+
+	return productTags, nil
 }
 
 func (manager *ProductManager) AddProductTag(productTag *model.ProductTag) error {

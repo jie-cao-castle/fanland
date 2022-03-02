@@ -95,13 +95,13 @@ func (s *ProductService) GetProductTags(c *gin.Context) {
 	}
 
 	var tags []*model.ProductTag
-	//var err error
-	/*
-		if tags, err = s.productManager.GetProductTags(req.ProductId); err != nil {
-			res := response.GenericResponse{Success: false, Message: err.Error()}
-			c.JSON(http.StatusOK, res)
-		}
-	*/
+	var err error
+
+	if tags, err = s.productManager.GetProductTagsByProductId(req.ProductId); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
 	res := response.GenericResponse{Success: true, Result: tags}
 	c.JSON(http.StatusOK, res)
 }
