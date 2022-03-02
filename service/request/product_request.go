@@ -22,6 +22,14 @@ type AddProductRequest struct {
 	CategoryId  uint64 `json:"categoryId"`
 }
 
+type UpdateProductRequest struct {
+	Name        string `json:"name"`
+	ProductDesc string `json:"productDesc"`
+	Id          uint64 `json:"id"`
+	ImgUrl      string `json:"imgUrl"`
+	CategoryId  uint64 `json:"categoryId"`
+}
+
 type AddProductTagRequest struct {
 	TagName   string `json:"tagName"`
 	ProductId uint64 `json:"productId"`

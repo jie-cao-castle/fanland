@@ -21,10 +21,6 @@ func (s *ProductService) InitService(options *server.ServerOptions) {
 	s.productManager = &manager.ProductManager{}
 }
 
-func (s *ProductService) UpdateProduct(product *model.Product) error {
-	return s.productManager.UpdateProduct(product)
-}
-
 func (s *ProductService) GetProductList(categoryId uint64) ([]*model.Product, error) {
 	return s.productManager.GetProductsByCategory(categoryId)
 }
@@ -57,8 +53,27 @@ func (s *ProductService) AddProduct(c *gin.Context) {
 	}
 
 	var product *model.Product
-	product = converter.ConvertReqToProduct(&req)
+	product = converter.ConvertAddReqToProduct(&req)
 	if err := s.productManager.AddProduct(product); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: product}
+	c.JSON(http.StatusOK, res)
+}
+
+func (s *ProductService) UpdateProduct(c *gin.Context) {
+	var req request.UpdateProductRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var product *model.Product
+	product = converter.ConvertUpdateReqToProduct(&req)
+	if err := s.productManager.UpdateProduct(product); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}

@@ -28,20 +28,6 @@ func (manager *ProductManager) InitManager(options *server.ServerOptions) {
 	manager.nftDB.InitDB(options.DbName)
 }
 
-func (manager *ProductManager) AddProduct(product *model.Product) error {
-	manager.productDB.Open()
-	defer manager.productDB.Close()
-	productDO := converter.ConvertToProductDO(product)
-	return manager.productDB.Insert(productDO)
-}
-
-func (manager *ProductManager) UpdateProduct(product *model.Product) error {
-	manager.productDB.Open()
-	defer manager.productDB.Close()
-	productDO := converter.ConvertToProductDO(product)
-	return manager.productDB.Update(productDO)
-}
-
 func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Product, error) {
 	manager.productDB.Open()
 	defer manager.productDB.Close()
@@ -152,6 +138,28 @@ func (manager *ProductManager) AddProductTag(productTag *model.ProductTag) error
 	defer manager.productTagDB.Close()
 	tag := converter.ConvertToProductTagDO(productTag)
 	if err := manager.productTagDB.Insert(tag); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (manager *ProductManager) AddProduct(product *model.Product) error {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO := converter.ConvertToProductDO(product)
+	if err := manager.productDB.Insert(productDO); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (manager *ProductManager) UpdateProduct(product *model.Product) error {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO := converter.ConvertToProductDO(product)
+	if err := manager.productDB.Update(productDO); err != nil {
 		return err
 	}
 
