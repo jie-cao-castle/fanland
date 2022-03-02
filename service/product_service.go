@@ -50,3 +50,22 @@ func (s *ProductService) GetProductById(c *gin.Context) {
 	res := response.GenericResponse{Success: true, Result: product}
 	c.JSON(http.StatusOK, res)
 }
+
+func (s *ProductService) GetProductsByCategoryId(c *gin.Context) {
+	var req request.ProductsByCategoryIdRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var products []*model.Product
+	var err error
+	if products, err = s.productManager.GetProductsByCategory(req.CategoryId); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: products}
+	c.JSON(http.StatusOK, res)
+}
