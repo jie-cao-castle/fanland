@@ -3,6 +3,7 @@ package service
 import (
 	"fanland/db/converter"
 	"fanland/manager"
+	"fanland/model"
 	"fanland/server"
 	"fanland/service/request"
 	"fanland/service/response"

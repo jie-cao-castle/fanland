@@ -33,3 +33,7 @@ func ConvertToProductTag(tagDO *dao.ProductTagDO) *model.ProductTag {
 func ConvertToProductCategory(categoryDO *dao.ProductCategoryDO) *model.ProductCategory {
 	return nil
 }
+
+func ConvertUpdateReqToProduct(updateRequest *request.UpdateProductRequest) *model.Product {
+	return nil
+}
