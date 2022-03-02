@@ -14,7 +14,7 @@ func ConvertToProductDO(product *model.Product) *dao.ProductDO {
 	return nil
 }
 
-func ConvertReqToProduct(req *request.AddProductRequest) *model.Product {
+func ConvertAddReqToProduct(req *request.AddProductRequest) *model.Product {
 	return nil
 }
 
