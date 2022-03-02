@@ -67,7 +67,7 @@ func (f *ProductTagDB) GetById(tagId int64) (*dao.ProductTagDO, error) {
 	return product, nil
 }
 
-func (f *ProductTagDB) insert(tag *dao.ProductTagDO) (err error) {
+func (f *ProductTagDB) Insert(tag *dao.ProductTagDO) (err error) {
 
 	query := "INSERT INTO product_tag (tag_name, create_time, update_time) VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)

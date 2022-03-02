@@ -21,3 +21,8 @@ type AddProductRequest struct {
 	AuthorId    uint64 `json:"authorId"`
 	CategoryId  uint64 `json:"categoryId"`
 }
+
+type AddProductTagRequest struct {
+	TagName   string `json:"tagName"`
+	ProductId string `json:"productId"`
+}

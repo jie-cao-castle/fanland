@@ -96,3 +96,14 @@ func (manager *ProductManager) GetProductsByCategory(categoryId uint64) ([]*mode
 
 	return products, nil
 }
+
+func (manager *ProductManager) AddProductTag(productTag *model.ProductTag) error {
+	manager.productTagDB.Open()
+	defer manager.productTagDB.Close()
+	tag := converter.ConvertToProductTagDO(productTag)
+	if err := manager.productTagDB.Insert(tag); err != nil {
+		return err
+	}
+
+	return nil
+}
