@@ -4,6 +4,10 @@ import (
 	"fanland/manager"
 	"fanland/model"
 	"fanland/server"
+	"fanland/service/request"
+	"fanland/service/response"
+	"github.com/gin-gonic/gin"
+	"net/http"
 )
 
 type ProductService struct {
@@ -24,10 +28,25 @@ func (s *ProductService) UpdateProduct(product *model.Product) error {
 	return s.productManager.UpdateProduct(product)
 }
 
-func (s *ProductService) GetProduct(productId uint64) (*model.Product, error) {
-	return s.productManager.GetProductDetails(productId)
-}
-
 func (s *ProductService) GetProductList(categoryId uint64) ([]*model.Product, error) {
 	return s.productManager.GetProductsByCategory(categoryId)
+}
+
+func (s *ProductService) GetProductById(c *gin.Context) {
+	var req request.ProductByIdRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var product *model.Product
+	var err error
+	if product, err = s.productManager.GetProductDetails(req.ProductId); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: product}
+	c.JSON(http.StatusOK, res)
 }
