@@ -17,6 +17,7 @@ type AddProductRequest struct {
 	Name        string `json:"name"`
 	ProductDesc string `json:"productDesc"`
 	Id          uint64 `json:"id"`
-	ImgUrl      string `json:"i''"`
+	ImgUrl      string `json:"imgUrl"`
 	AuthorId    uint64 `json:"authorId"`
+	CategoryId  uint64 `json:"categoryId"`
 }
