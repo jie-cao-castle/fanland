@@ -24,5 +24,10 @@ type AddProductRequest struct {
 
 type AddProductTagRequest struct {
 	TagName   string `json:"tagName"`
-	ProductId string `json:"productId"`
+	ProductId uint64 `json:"productId"`
+}
+
+type ProductTagRequest struct {
+	TagName string `json:"tagName"`
+	TagId   uint64 `json:"tagId"`
 }

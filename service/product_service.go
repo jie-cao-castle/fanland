@@ -106,6 +106,26 @@ func (s *ProductService) GetProductTags(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (s *ProductService) GetProductsByTag(c *gin.Context) {
+	var req request.ProductTagRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var products []*model.Product
+	var err error
+
+	if products, err = s.productManager.GetProductsByTagId(req.TagId); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: products}
+	c.JSON(http.StatusOK, res)
+}
+
 func (s *ProductService) AddProductTags(c *gin.Context) {
 	var req request.AddProductTagRequest
 

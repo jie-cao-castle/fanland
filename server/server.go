@@ -35,10 +35,13 @@ func (s *Server) Init(options *ServerOptions) *gin.Engine {
 	// Initialize all services
 	s.initService()
 
-	// router
+	// product router
 	r.POST("/products/details", s.productService.GetProductById)
 	r.POST("/products/category", s.productService.GetProductsByCategoryId)
 	r.POST("/products/add", s.productService.AddProduct)
+	r.POST("/products/tags", s.productService.GetProductsByTag)
+
+	r.POST("/tags/products", s.productService.GetProductTags)
 
 	r.POST("/category/list", s.categoryService.GetProductCategories)
 

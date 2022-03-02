@@ -98,6 +98,32 @@ func (manager *ProductManager) GetProductsByCategory(categoryId uint64) ([]*mode
 	return products, nil
 }
 
+func (manager *ProductManager) GetProductsByTagId(tagId uint64) ([]*model.Product, error) {
+	manager.productTagRelDB.Open()
+	defer manager.productTagRelDB.Close()
+	relationships, err := manager.productTagRelDB.GetListByTagId(tagId)
+	if err != nil {
+		return nil, err
+	}
+
+	var productIds []uint64
+	for i, rel := range relationships {
+		productIds[i] = rel.ProductId
+	}
+	productDOs, err := manager.productDB.GetListByIds(productIds)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var products []*model.Product
+	for i, productDO := range productDOs {
+		products[i] = converter.ConvertToProduct(productDO, nil, nil)
+	}
+
+	return products, nil
+}
+
 func (manager *ProductManager) GetProductTagsByProductId(productId uint64) ([]*model.ProductTag, error) {
 	manager.productTagRelDB.Open()
 	defer manager.productTagRelDB.Close()
