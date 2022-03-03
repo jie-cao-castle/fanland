@@ -1,10 +1,10 @@
 package manager
 
 import (
+	"fanland/common"
 	"fanland/db"
 	"fanland/db/converter"
 	"fanland/model"
-	"fanland/server"
 	"strconv"
 	"strings"
 )
@@ -19,10 +19,10 @@ type ProductManager struct {
 	productTagDB         *dao.ProductTagDB
 	productTagRelDB      *dao.ProductTagRelDB
 	productCategoryRelDB *dao.ProductCategoryRelDB
-	options              *server.ServerOptions
+	options              *common.ServerOptions
 }
 
-func (manager *ProductManager) InitManager(options *server.ServerOptions) {
+func (manager *ProductManager) InitManager(options *common.ServerOptions) {
 	manager.options = options
 	manager.productDB.InitDB(options.DbName)
 	manager.nftDB.InitDB(options.DbName)

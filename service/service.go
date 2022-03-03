@@ -1,7 +1,9 @@
 package service
 
-import "fanland/server"
+import (
+	"fanland/common"
+)
 
 type Service interface {
-	InitService(options *server.ServerOptions)
+	InitService(options *common.ServerOptions)
 }

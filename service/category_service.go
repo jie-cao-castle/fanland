@@ -1,9 +1,9 @@
 package service
 
 import (
+	"fanland/common"
 	"fanland/manager"
 	"fanland/model"
-	"fanland/server"
 	"fanland/service/request"
 	"fanland/service/response"
 	"github.com/gin-gonic/gin"
@@ -12,7 +12,7 @@ import (
 
 type CategoryService struct {
 	categoryManager *manager.CategoryManager
-	options         *server.ServerOptions
+	options         *common.ServerOptions
 }
 
 func (s *CategoryService) GetProductCategories(c *gin.Context) {

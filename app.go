@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fanland/common"
 	"fanland/server"
 	log "github.com/sirupsen/logrus"
 	"github.com/spf13/cobra"
@@ -9,11 +10,11 @@ import (
 )
 
 type App struct {
-	options *server.ServerOptions
+	options *common.ServerOptions
 }
 
 func (app *App) Start(cmd *cobra.Command, args []string) {
-	app.options = &server.ServerOptions{}
+	app.options = &common.ServerOptions{}
 	cmd.Flags().StringVarP(&app.options.DbName, "DB", "d", "", "db name")
 	srv := server.Server{}
 	srv.Init(app.options)

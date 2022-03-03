@@ -1,10 +1,10 @@
 package service
 
 import (
+	"fanland/common"
 	"fanland/db/converter"
 	"fanland/manager"
 	"fanland/model"
-	"fanland/server"
 	"fanland/service/request"
 	"fanland/service/response"
 	"github.com/gin-gonic/gin"
@@ -13,10 +13,10 @@ import (
 
 type ProductService struct {
 	productManager *manager.ProductManager
-	options        *server.ServerOptions
+	options        *common.ServerOptions
 }
 
-func (s *ProductService) InitService(options *server.ServerOptions) {
+func (s *ProductService) InitService(options *common.ServerOptions) {
 	s.options = options
 	s.productManager = &manager.ProductManager{}
 }

@@ -3,6 +3,7 @@ package server
 import (
 	"context"
 	"errors"
+	"fanland/common"
 	"fanland/service"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ const (
 )
 
 type Server struct {
-	options *ServerOptions
+	options *common.ServerOptions
 	engine  *gin.Engine
 	srv     *http.Server
 	DoneCh  chan bool
@@ -27,7 +28,7 @@ type Server struct {
 	categoryService *service.CategoryService
 }
 
-func (s *Server) Init(options *ServerOptions) *gin.Engine {
+func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	s.options = options
 	r := gin.New()
 	r.Use(sessions.Sessions("mysession", sessions.NewCookieStore([]byte("secret"))))

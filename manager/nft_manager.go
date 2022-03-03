@@ -1,11 +1,11 @@
 package manager
 
 import (
+	"fanland/common"
 	dao "fanland/db"
-	"fanland/server"
 )
 
 type NftManager struct {
 	nftDB   *dao.NftDB
-	options *server.ServerOptions
+	options *common.ServerOptions
 }

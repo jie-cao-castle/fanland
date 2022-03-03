@@ -1,7 +1,7 @@
 package service
 
 import (
-	"fanland/server"
+	"fanland/common"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 	"net/http"
@@ -9,14 +9,14 @@ import (
 )
 
 type AuthService struct {
-	options *server.ServerOptions
+	options *common.ServerOptions
 }
 
 const (
 	userkey = "user"
 )
 
-func (s *AuthService) InitService(options *server.ServerOptions) {
+func (s *AuthService) InitService(options *common.ServerOptions) {
 	s.options = options
 }
 

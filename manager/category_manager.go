@@ -1,18 +1,18 @@
 package manager
 
 import (
+	"fanland/common"
 	dao "fanland/db"
 	"fanland/db/converter"
 	"fanland/model"
-	"fanland/server"
 )
 
 type CategoryManager struct {
 	productCategoryDB *dao.ProductCategoryDB
-	options           *server.ServerOptions
+	options           *common.ServerOptions
 }
 
-func (manager *CategoryManager) InitManager(options *server.ServerOptions) {
+func (manager *CategoryManager) InitManager(options *common.ServerOptions) {
 	manager.options = options
 	manager.productCategoryDB.InitDB(options.DbName)
 }
