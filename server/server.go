@@ -26,6 +26,8 @@ type Server struct {
 	authService     *service.AuthService
 	productService  *service.ProductService
 	categoryService *service.CategoryService
+
+	productUploadService *service.ProductUploadService
 }
 
 func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
@@ -42,6 +44,8 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	r.POST("/products/add", s.productService.AddProduct)
 	r.POST("/products/update", s.productService.UpdateProduct)
 	r.POST("/products/tags", s.productService.GetProductsByTag)
+
+	r.POST("/productsUpload/postContent", s.productUploadService.UploadProduct)
 
 	r.POST("/tags/products", s.productService.GetProductTags)
 
@@ -103,4 +107,7 @@ func (s *Server) initService() {
 
 	s.productService = &service.ProductService{}
 	s.productService.InitService(s.options)
+
+	s.productUploadService = &service.ProductUploadService{}
+	s.productUploadService.InitService(s.options)
 }
