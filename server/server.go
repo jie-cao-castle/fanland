@@ -28,6 +28,7 @@ type Server struct {
 	categoryService *service.CategoryService
 
 	productUploadService *service.ProductUploadService
+	nftService           *service.NftService
 }
 
 func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
@@ -41,6 +42,19 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	// product router
 	r.POST("/products/details", s.productService.GetProductById)
 	r.POST("/products/category", s.productService.GetProductsByCategoryId)
+	r.POST("/products/add", s.productService.AddProduct)
+	r.POST("/products/update", s.productService.UpdateProduct)
+	r.POST("/products/tags", s.productService.GetProductsByTag)
+
+	r.POST("/products/addSale", s.productService.AddProductSale)
+	
+	r.POST("/asset/addContract", s.nftService.AddNFTContract)
+	r.POST("/asset/addOrder", s.nftService.AddNFTOrder)
+	r.POST("/asset/updateContract", s.nftService.UpdateNFTContract)
+	r.POST("/asset/updateOrder", s.nftService.UpdateNFTOrder)
+	r.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
+	r.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
+
 	r.POST("/products/add", s.productService.AddProduct)
 	r.POST("/products/update", s.productService.UpdateProduct)
 	r.POST("/products/tags", s.productService.GetProductsByTag)

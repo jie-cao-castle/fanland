@@ -54,7 +54,7 @@ func (s *NftService) AddNFTOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (s *NftService) getNFTContractsByProduct(c *gin.Context) {
+func (s *NftService) GetNFTContractsByProduct(c *gin.Context) {
 	var req request.ProductContractRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -73,7 +73,7 @@ func (s *NftService) getNFTContractsByProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (s *NftService) getNFTOrdersByProduct(c *gin.Context) {
+func (s *NftService) GetNFTOrdersByProduct(c *gin.Context) {
 	var req request.ProductContractRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -92,7 +92,7 @@ func (s *NftService) getNFTOrdersByProduct(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (s *NftService) updateNFTOrder(c *gin.Context) {
+func (s *NftService) UpdateNFTOrder(c *gin.Context) {
 	var req request.UpdateNftContractRequest
 
 	if err := c.BindJSON(&req); err != nil {
@@ -111,7 +111,7 @@ func (s *NftService) updateNFTOrder(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
-func (s *NftService) updateNFTContract(c *gin.Context) {
+func (s *NftService) UpdateNFTContract(c *gin.Context) {
 	var req request.UpdateNftOrderRequest
 
 	if err := c.BindJSON(&req); err != nil {
