@@ -6,15 +6,110 @@ import (
 	"fanland/service/request"
 )
 
-func ConvertToProduct(productDO *dao.ProductDO, nftDO *dao.NftDO, tags []*dao.ProductTagDO) *model.Product {
-	return nil
+func ConvertToProduct(productDO *dao.ProductDO, userDO *dao.UserDO, tags []*dao.ProductTagDO) *model.Product {
+	product := &model.Product{
+		Id:          productDO.Id,
+		Name:        productDO.Name,
+		Desc:        productDO.Desc,
+		ExternalUrl: productDO.ExternalUrl,
+		ImgUrl:      productDO.ImgUrl,
+		CreateTime:  productDO.CreateTime,
+		UpdateTime:  productDO.UpdateTime,
+	}
+	product.Creator = ConvertToUser(userDO)
+	return product
 }
 
-func ConvertToProductDO(product *model.Product) *dao.ProductDO {
-	return nil
+func ConvertToUser(userDO *dao.UserDO) *model.User {
+	user := &model.User{
+		Id:         userDO.Id,
+		UserName:   userDO.UserName,
+		UserDesc:   userDO.UserDesc,
+		AvatarUrl:  userDO.AvatarUrl,
+		CreateTime: userDO.CreateTime,
+		UpdateTime: userDO.UpdateTime,
+	}
+	return user
+}
+
+func ConvertToProductSale(saleDO *dao.ProductSaleDO) *model.ProductSale {
+	sale := &model.ProductSale{
+		Id:          saleDO.Id,
+		ProductId:   saleDO.ProductId,
+		ProductName: saleDO.ProductName,
+		ChainId:     saleDO.ChainId,
+		ChainCode:   saleDO.ChainCode,
+		ChainName:   saleDO.ChainName,
+		ContractId:  saleDO.ContractId,
+		Price:       saleDO.Price,
+		PriceUnit:   saleDO.PriceUnit,
+		StartTime:   saleDO.StartTime,
+		EndTime:     saleDO.EndTime,
+		Status:      saleDO.Status,
+		CreateTime:  saleDO.CreateTime,
+		UpdateTime:  saleDO.UpdateTime,
+	}
+	return sale
 }
 
 func ConvertAddReqToProduct(req *request.AddProductRequest) *model.Product {
+	product := &model.Product{
+		Name:        req.Name,
+		Desc:        req.ProductDesc,
+		Id:          req.Id,
+		ImgUrl:      req.ImgUrl,
+		ExternalUrl: req.ExternalUrl,
+	}
+
+	return product
+}
+
+func ConvertToProductDO(product *model.Product) *dao.ProductDO {
+	productDO := &dao.ProductDO{
+		Name:        product.Name,
+		Desc:        product.Desc,
+		Id:          product.Id,
+		ImgUrl:      product.ImgUrl,
+		ExternalUrl: product.ExternalUrl,
+		CreatorId:   product.Creator.Id,
+	}
+
+	return productDO
+}
+
+func ConvertToProductSaleDO(product *model.ProductSale) *dao.ProductSaleDO {
+	productDo := &dao.ProductSaleDO{
+		ProductId:     product.ProductId,
+		ChainId:       product.ChainId,
+		ChainCode:     product.ChainCode,
+		ContractId:    product.ContractId,
+		Price:         product.Price,
+		PriceUnit:     product.PriceUnit,
+		StartTime:     product.StartTime,
+		EndTime:       product.EndTime,
+		EffectiveTime: product.EffectiveTime,
+		Status:        product.Status,
+	}
+	return productDo
+}
+
+func ConvertReqToProductSale(req *request.AddProductSaleRequest) *model.ProductSale {
+	productSale := &model.ProductSale{
+		ProductId:     req.ProductId,
+		ChainId:       req.ChainId,
+		ChainCode:     req.ChainCode,
+		ContractId:    req.ContractId,
+		Price:         req.Price,
+		PriceUnit:     req.PriceUnit,
+		StartTime:     req.StartTime,
+		EndTime:       req.EndTime,
+		EffectiveTime: req.EffectiveTime,
+		Status:        req.Status,
+	}
+	return productSale
+}
+
+func ConvertAddReqToNft(req *request.AddNftRequest) *model.NFT {
 	return nil
 }
 

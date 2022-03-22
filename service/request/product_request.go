@@ -18,8 +18,9 @@ type AddProductRequest struct {
 	ProductDesc string `json:"productDesc"`
 	Id          uint64 `json:"id"`
 	ImgUrl      string `json:"imgUrl"`
-	AuthorId    uint64 `json:"authorId"`
+	CreatorId   uint64 `json:"creatorId"`
 	CategoryId  uint64 `json:"categoryId"`
+	ExternalUrl string `json:"externalUrl"`
 }
 
 type UpdateProductRequest struct {
@@ -38,4 +39,17 @@ type AddProductTagRequest struct {
 type ProductTagRequest struct {
 	TagName string `json:"tagName"`
 	TagId   uint64 `json:"tagId"`
+}
+
+type AddProductSaleRequest struct {
+	ProductId     uint64 `json:"productId"`
+	ChainId       uint64 `json:"chainId"`
+	ChainCode     string `json:"chainCode"`
+	ContractId    uint64 `json:"contractId"`
+	Price         uint64 `json:"price"`
+	PriceUnit     uint64 `json:"priceUnit"`
+	StartTime     uint64 `json:"startTime"`
+	EndTime       uint64 `json:"endTime"`
+	EffectiveTime uint64 `json:"effectiveTime"`
+	Status        int16  `json:"status"`
 }

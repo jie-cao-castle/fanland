@@ -63,10 +63,99 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 		Name:   name,
 		Desc:   desc,
 		ImgUrl: imgUrl,
-		NftId:  nftId,
 		Tags:   tags,
 	}
 	return product, nil
+}
+
+func (f *ProductDB) GetTitleProduct() (*dao.ProductDO, error) {
+	var (
+		name        string
+		desc        string
+		id          uint64
+		imgUrl      string
+		externalUrl string
+		creatorId   uint64
+		tags        string
+		createTime  time.Time
+		updateTime  time.Time
+	)
+
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, creatorId, tag_ids, create_time, update_time from product LIMIT 1")
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	product := &dao.ProductDO{
+		Id:          id,
+		Name:        name,
+		Desc:        desc,
+		ImgUrl:      imgUrl,
+		ExternalUrl: externalUrl,
+		CreatorId:   creatorId,
+		Tags:        tags,
+	}
+	return product, nil
+}
+
+func (f *ProductDB) GetListByUserId(userId uint64) ([]*dao.ProductDO, error) {
+	var (
+		name        string
+		desc        string
+		id          uint64
+		imgUrl      string
+		externalUrl string
+		tags        string
+		createTime  time.Time
+		updateTime  time.Time
+	)
+
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, tag_ids, create_time, update_time from product where creatorId = ?", userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var products []*dao.ProductDO
+	for rows.Next() {
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
+		if err != nil {
+			return nil, err
+		}
+
+		product := &dao.ProductDO{
+			Id:          id,
+			Name:        name,
+			Desc:        desc,
+			ImgUrl:      imgUrl,
+			ExternalUrl: externalUrl,
+			Tags:        tags,
+		}
+
+		products = append(products, product)
+	}
+	err = rows.Err()
+	if err != nil {
+		return products, err
+	}
+	return products, nil
 }
 
 func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
@@ -81,7 +170,7 @@ func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.NftId, product.Tags)
+	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.Tags)
 	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
@@ -151,7 +240,6 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 			Name:   name,
 			Desc:   desc,
 			ImgUrl: imgUrl,
-			NftId:  nftId,
 			Tags:   tags,
 		}
 

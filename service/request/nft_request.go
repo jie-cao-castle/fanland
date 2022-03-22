@@ -1,0 +1,50 @@
+package request
+
+import "time"
+
+type AddNftRequest struct {
+	Name        string `json:"name"`
+	ProductDesc string `json:"productDesc"`
+	Id          uint64 `json:"id"`
+	ImgUrl      string `json:"imgUrl"`
+	AuthorId    uint64 `json:"authorId"`
+	CategoryId  uint64 `json:"categoryId"`
+}
+
+type AddNftContractRequest struct {
+	ProductId       uint64    `json:"productId"`
+	ChainId         uint64    `json:"chainId"`
+	ChainCode       string    `json:"chainCode"`
+	ContractAddress string    `json:"contractAddress"`
+	Status          int8      `json:"status"`
+	TokenSymbol     string    `json:"tokenSymbol"`
+	TokenName       string    `json:"tokenName"`
+	CreateTime      time.Time `json:"createTime"`
+	UpdateTime      time.Time `json:"updateTime"`
+}
+type UpdateNftContractRequest struct {
+	Id uint64 `json:"id"`
+	AddNftContractRequest
+}
+type ProductContractRequest struct {
+	ProductId uint64 `json:"productId"`
+}
+
+type AddNftOrderRequest struct {
+	Id              uint64    `json:"id"`
+	ProductId       uint64    `json:"productId"`
+	NftKey          string    `json:"nftKey"`
+	Price           uint64    `json:"price"`
+	PriceUnit       uint64    `json:"priceUnit"`
+	Amount          uint64    `json:"amount"`
+	Status          int8      `json:"status"`
+	ChainId         uint64    `json:"chainId"`
+	ChainCode       string    `json:"chainCode"`
+	TransactionHash string    `json:"transactionHash"`
+	CreateTime      time.Time `json:"createTime"`
+	UpdateTime      time.Time `json:"updateTime"`
+}
+type UpdateNftOrderRequest struct {
+	Id uint64 `json:"id"`
+	AddNftOrderRequest
+}

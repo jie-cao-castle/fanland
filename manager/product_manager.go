@@ -11,11 +11,12 @@ import (
 
 type ProductManager struct {
 	productDB            *dao.ProductDB
+	productSaleDB        *dao.ProductSaleDB
+	userDB               *dao.UserDB
 	chainNetDB           *dao.ChainNetDB
 	chainTokenDB         *dao.ChainTokenDB
 	nftDB                *dao.NftDB
 	productCategoryDB    *dao.ProductCategoryDB
-	productOrderDB       *dao.ProductOrderDB
 	productTagDB         *dao.ProductTagDB
 	productTagRelDB      *dao.ProductTagRelDB
 	productCategoryRelDB *dao.ProductCategoryRelDB
@@ -26,36 +27,85 @@ func (manager *ProductManager) InitManager(options *common.ServerOptions) {
 	manager.options = options
 	manager.productDB.InitDB(options.DbName)
 	manager.nftDB.InitDB(options.DbName)
+	manager.productSaleDB.InitDB(options.DbName)
 }
 
-func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Product, error) {
+func (manager *ProductManager) GetTitleProduct() (*model.Product, error) {
 	manager.productDB.Open()
 	defer manager.productDB.Close()
-	product, err := manager.productDB.GetById(productId)
+	productDO, err := manager.productDB.GetTitleProduct()
 	if err != nil {
 		return nil, err
+	}
+	userDO, err := manager.userDB.GetById(productDO.Id)
+
+	var product = converter.ConvertToProduct(productDO, userDO, nil)
+	return product, nil
+}
+
+func (manager *ProductManager) GetProductsByUserId(userId uint64) ([]*model.Product, error) {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDOs, err := manager.productDB.GetListByUserId(userId)
+	if err != nil {
+		return nil, err
+	}
+
+	var products []*model.Product
+	for i, productDO := range productDOs {
+		userDO, err := manager.userDB.GetById(productDO.Id)
+		if err != nil {
+			return nil, err
+		}
+		products[i] = converter.ConvertToProduct(productDO, userDO, nil)
+	}
+
+	return products, nil
+}
+
+func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Product, []*model.ProductSale, error) {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO, err := manager.productDB.GetById(productId)
+	if err != nil {
+		return nil, nil, err
 	}
 
 	manager.nftDB.Open()
 	defer manager.nftDB.Close()
 	manager.nftDB.Close()
-	nft, err := manager.nftDB.GetById(product.NftId)
-	tagIdStrs := strings.Split(product.Tags, ",")
 
-	var tagIds []uint64
-	for _, tagId := range tagIdStrs {
-		intVar, err := strconv.ParseUint(tagId, 10, 64)
-		if err != nil {
-			return nil, err
+	var product *model.Product
+	if len(productDO.Tags) > 0 {
+		tagIdStrs := strings.Split(productDO.Tags, ",")
+
+		var tagIds []uint64
+		for _, tagId := range tagIdStrs {
+			intVar, err := strconv.ParseUint(tagId, 10, 64)
+			if err != nil {
+				return nil, nil, err
+			}
+
+			tagIds = append(tagIds, intVar)
 		}
 
-		tagIds = append(tagIds, intVar)
+		manager.productTagDB.Init()
+		defer manager.nftDB.Close()
+		tags, err := manager.productTagDB.GetListByIds(tagIds)
+		if err != nil {
+			return nil, nil, err
+		}
+		product = converter.ConvertToProduct(productDO, nil, tags)
 	}
 
-	manager.productTagDB.Init()
-	defer manager.nftDB.Close()
-	tags, err := manager.productTagDB.GetListByIds(tagIds)
-	return converter.ConvertToProduct(product, nft, tags), nil
+	salesDO, err := manager.productSaleDB.GetListByProductId(product.Id)
+	var sales []*model.ProductSale
+	for _, saleDO := range salesDO {
+		sale := converter.ConvertToProductSale(saleDO)
+		sales = append(sales, sale)
+	}
+
+	return product, sales, nil
 }
 
 func (manager *ProductManager) GetProductsByCategory(categoryId uint64) ([]*model.Product, error) {
@@ -149,6 +199,17 @@ func (manager *ProductManager) AddProduct(product *model.Product) error {
 	defer manager.productDB.Close()
 	productDO := converter.ConvertToProductDO(product)
 	if err := manager.productDB.Insert(productDO); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (manager *ProductManager) AddProductSale(product *model.ProductSale) error {
+	manager.productDB.Open()
+	defer manager.productDB.Close()
+	productDO := converter.ConvertToProductSaleDO(product)
+	if err := manager.productSaleDB.Insert(productDO); err != nil {
 		return err
 	}
 

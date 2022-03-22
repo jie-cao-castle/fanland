@@ -1,8 +1,8 @@
-package model
+package dao
 
 import "time"
 
-type User struct {
+type UserDO struct {
 	Id         uint64
 	AvatarUrl  string
 	UserName   string

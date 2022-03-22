@@ -21,6 +21,14 @@ func (s *ProductService) InitService(options *common.ServerOptions) {
 	s.productManager = &manager.ProductManager{}
 }
 
+func (s *ProductService) GetTitleProduct() (*model.Product, error) {
+	return s.productManager.GetTitleProduct()
+}
+
+func (s *ProductService) GetUserProducts(userId uint64) ([]*model.Product, error) {
+	return s.productManager.GetProductsByUserId(userId)
+}
+
 func (s *ProductService) GetProductList(categoryId uint64) ([]*model.Product, error) {
 	return s.productManager.GetProductsByCategory(categoryId)
 }
@@ -34,13 +42,14 @@ func (s *ProductService) GetProductById(c *gin.Context) {
 	}
 
 	var product *model.Product
+	var sales []*model.ProductSale
 	var err error
-	if product, err = s.productManager.GetProductDetails(req.ProductId); err != nil {
+	if product, sales, err = s.productManager.GetProductDetails(req.ProductId); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}
 
-	res := response.GenericResponse{Success: true, Result: product}
+	res := response.GenericResponse{Success: true, Result: &response.ProductDetails{Product: product, Sales: sales}}
 	c.JSON(http.StatusOK, res)
 }
 
@@ -60,6 +69,25 @@ func (s *ProductService) AddProduct(c *gin.Context) {
 	}
 
 	res := response.GenericResponse{Success: true, Result: product}
+	c.JSON(http.StatusOK, res)
+}
+
+func (s *ProductService) AddProductSale(c *gin.Context) {
+	var req request.AddProductSaleRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	var productSale *model.ProductSale
+	productSale = converter.ConvertReqToProductSale(&req)
+	if err := s.productManager.AddProductSale(productSale); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
+
+	res := response.GenericResponse{Success: true, Result: productSale}
 	c.JSON(http.StatusOK, res)
 }
 

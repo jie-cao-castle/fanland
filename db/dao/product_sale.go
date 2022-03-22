@@ -2,15 +2,14 @@ package dao
 
 import "time"
 
-type NftSkuDO struct {
+type ProductSaleDO struct {
 	Id            uint64
 	ProductId     uint64
 	ProductName   string
 	ChainId       uint64
 	ChainCode     string
 	ChainName     string
-	TokenSymbol   string
-	TokenName     string
+	ContractId    uint64
 	Price         uint64
 	PriceUnit     uint64
 	StartTime     uint64
@@ -19,4 +18,5 @@ type NftSkuDO struct {
 	Status        int16
 	CreateTime    time.Time
 	UpdateTime    time.Time
+	FromUserId    uint64
 }

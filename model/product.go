@@ -3,13 +3,15 @@ package model
 import "time"
 
 type Product struct {
-	name       string
-	desc       string
-	id         uint64
-	imgUrl     string
-	authorId   uint64
-	nft        *NftSku
-	tags       []*ProductTag
-	createTime time.Time
-	updateTime time.Time
+	Name         string
+	Desc         string
+	Id           uint64
+	ImgUrl       string
+	ExternalUrl  string
+	Creator      *User
+	ProductSales []*ProductSale
+	Tags         []*ProductTag
+	CreateTime   time.Time
+	UpdateTime   time.Time
+	Popularity   uint64
 }

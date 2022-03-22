@@ -70,7 +70,6 @@ func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {
 		ChainName:   chainName,
 		TokenSymbol: tokenSymbol,
 		TokenName:   tokenName,
-		Price:       price,
 		PriceUnit:   priceUnit,
 		CreateTime:  createTime,
 		UpdateTime:  updateTime,
@@ -78,7 +77,7 @@ func (f *NftDB) GetById(id uint64) (nftDO *dao.NftDO, err error) {
 	return nftObj, nil
 }
 
-func (f *NftDB) insert(nft *dao.NftDO) (err error) {
+func (f *NftDB) Insert(nft *dao.NftDO) (err error) {
 
 	query := "INSERT INTO nft(product_id, product_name, chain_id, chain_code, chain_name, token_symbol, token_name, " +
 		"price, price_unit, create_time, update_time) " +
@@ -93,7 +92,7 @@ func (f *NftDB) insert(nft *dao.NftDO) (err error) {
 	defer stmt.Close()
 
 	res, err := stmt.ExecContext(ctx, nft.ProductId, nft.ProductName, nft.ChainId, nft.ChainCode, nft.ChainName,
-		nft.TokenSymbol, nft.TokenName, nft.Price, nft.PriceUnit)
+		nft.TokenSymbol, nft.TokenName, nft.PriceUnit)
 	if err != nil {
 		log.Errorf("Error %s when inserting row into products table", err)
 		return err
@@ -116,7 +115,7 @@ func (f *NftDB) update(nft *dao.NftDO) error {
 	if err != nil {
 		log.Fatal(err)
 	}
-	res, err := stmt.ExecContext(ctx, nft.Price, nft.PriceUnit, nft.Id)
+	res, err := stmt.ExecContext(ctx, nft.PriceUnit, nft.Id)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -173,7 +172,6 @@ func (f *NftDB) getList(limit int64, offset int64) ([]*dao.NftDO, error) {
 			ChainName:   chainName,
 			TokenSymbol: tokenSymbol,
 			TokenName:   tokenName,
-			Price:       price,
 			PriceUnit:   priceUnit,
 			CreateTime:  createTime,
 			UpdateTime:  updateTime,
