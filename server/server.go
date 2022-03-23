@@ -33,6 +33,8 @@ type Server struct {
 
 func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	s.options = options
+	//TODO:: replace with config
+	s.options.DbName = "fanland"
 	r := gin.New()
 	r.Use(sessions.Sessions("mysession", sessions.NewCookieStore([]byte("secret"))))
 
@@ -47,6 +49,8 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	r.POST("/products/tags", s.productService.GetProductsByTag)
 
 	r.POST("/products/addSale", s.productService.AddProductSale)
+	r.GET("/products/title", s.productService.GetTitleProduct)
+	r.GET("/products/user/:uid", s.productService.GetUserProducts)
 
 	r.POST("/asset/addContract", s.nftService.AddNFTContract)
 	r.POST("/asset/addOrder", s.nftService.AddNFTOrder)
@@ -54,10 +58,6 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	r.POST("/asset/updateOrder", s.nftService.UpdateNFTOrder)
 	r.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
 	r.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
-
-	r.POST("/products/add", s.productService.AddProduct)
-	r.POST("/products/update", s.productService.UpdateProduct)
-	r.POST("/products/tags", s.productService.GetProductsByTag)
 
 	r.POST("/productsUpload/postContent", s.productUploadService.UploadProduct)
 

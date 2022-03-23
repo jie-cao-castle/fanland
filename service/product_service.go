@@ -9,6 +9,7 @@ import (
 	"fanland/service/response"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"strconv"
 )
 
 type ProductService struct {
@@ -19,18 +20,33 @@ type ProductService struct {
 func (s *ProductService) InitService(options *common.ServerOptions) {
 	s.options = options
 	s.productManager = &manager.ProductManager{}
+	s.productManager.InitManager(options)
 }
 
-func (s *ProductService) GetTitleProduct() (*model.Product, error) {
-	return s.productManager.GetTitleProduct()
+func (s *ProductService) GetTitleProduct(c *gin.Context) {
+	var product *model.Product
+	var err error
+	if product, err = s.productManager.GetTitleProduct(); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	res := response.GenericResponse{Success: true, Result: product}
+	c.JSON(http.StatusOK, res)
 }
 
-func (s *ProductService) GetUserProducts(userId uint64) ([]*model.Product, error) {
-	return s.productManager.GetProductsByUserId(userId)
-}
+func (s *ProductService) GetUserProducts(c *gin.Context) {
+	uidStr := c.Param("uid")
+	uid, err := strconv.ParseUint(uidStr, 10, 64)
+	var products []*model.Product
+	if products, err = s.productManager.GetProductsByUserId(uid); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+	}
 
-func (s *ProductService) GetProductList(categoryId uint64) ([]*model.Product, error) {
-	return s.productManager.GetProductsByCategory(categoryId)
+	res := response.GenericResponse{Success: true, Result: products}
+	c.JSON(http.StatusOK, res)
 }
 
 func (s *ProductService) GetProductById(c *gin.Context) {

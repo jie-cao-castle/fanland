@@ -25,9 +25,15 @@ type ProductManager struct {
 
 func (manager *ProductManager) InitManager(options *common.ServerOptions) {
 	manager.options = options
+	manager.productDB = &dao.ProductDB{}
+	manager.nftDB = &dao.NftDB{}
+	manager.productSaleDB = &dao.ProductSaleDB{}
+	manager.userDB = &dao.UserDB{}
+
 	manager.productDB.InitDB(options.DbName)
 	manager.nftDB.InitDB(options.DbName)
 	manager.productSaleDB.InitDB(options.DbName)
+	manager.userDB.InitDB(options.DbName)
 }
 
 func (manager *ProductManager) GetTitleProduct() (*model.Product, error) {
@@ -36,6 +42,9 @@ func (manager *ProductManager) GetTitleProduct() (*model.Product, error) {
 	productDO, err := manager.productDB.GetTitleProduct()
 	if err != nil {
 		return nil, err
+	}
+	if productDO == nil {
+		return nil, nil
 	}
 	userDO, err := manager.userDB.GetById(productDO.Id)
 

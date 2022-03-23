@@ -16,7 +16,7 @@ type ProductDB struct {
 
 func (f *ProductDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"root:root@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
@@ -37,7 +37,7 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, creatorId, tag_ids, create_time, update_time from product where id = ?", productId)
+	rows, err := f.db.Query("select id, product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time from product where id = ?", productId)
 
 	if err != nil {
 		return nil, err
@@ -81,7 +81,7 @@ func (f *ProductDB) GetTitleProduct() (*dao.ProductDO, error) {
 		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, creatorId, tag_ids, create_time, update_time from product LIMIT 1")
+	rows, err := f.db.Query("select id, product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time from product LIMIT 1")
 
 	if err != nil {
 		return nil, err
@@ -126,7 +126,7 @@ func (f *ProductDB) GetListByUserId(userId uint64) ([]*dao.ProductDO, error) {
 		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, tag_ids, create_time, update_time from product where creatorId = ?", userId)
+	rows, err := f.db.Query("select id, product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time from product where creatorId = ?", userId)
 
 	if err != nil {
 		return nil, err
@@ -160,7 +160,7 @@ func (f *ProductDB) GetListByUserId(userId uint64) ([]*dao.ProductDO, error) {
 
 func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 
-	query := "INSERT INTO product(product_name, product_desc,imgUrl, externalUrl, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product(product_name, product_desc,image_url, external_url, creator_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -220,7 +220,7 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, external_url, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -271,7 +271,7 @@ func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
 		args[i] = id
 	}
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, external_url, tag_ids, create_time, update_time from product WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
+	rows, err := f.db.Query("select id, product_name, product_desc, img_url, external_url, creator_id, tag_ids, create_time, update_time from product WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
