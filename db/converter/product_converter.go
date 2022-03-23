@@ -20,18 +20,6 @@ func ConvertToProduct(productDO *dao.ProductDO, userDO *dao.UserDO, tags []*dao.
 	return product
 }
 
-func ConvertToUser(userDO *dao.UserDO) *model.User {
-	user := &model.User{
-		Id:         userDO.Id,
-		UserName:   userDO.UserName,
-		UserDesc:   userDO.UserDesc,
-		AvatarUrl:  userDO.AvatarUrl,
-		CreateTime: userDO.CreateTime,
-		UpdateTime: userDO.UpdateTime,
-	}
-	return user
-}
-
 func ConvertToProductSale(saleDO *dao.ProductSaleDO) *model.ProductSale {
 	sale := &model.ProductSale{
 		Id:          saleDO.Id,

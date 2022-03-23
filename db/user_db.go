@@ -50,7 +50,7 @@ func (f *UserDB) Insert(user *dao.UserDO) (err error) {
 	return nil
 }
 
-func (f *UserDB) Update(user dao.UserDO) (err error) {
+func (f *UserDB) Update(user *dao.UserDO) (err error) {
 
 	query := "UPDATE fanland_user SET user_name=?, user_desc =?, avatar_url =?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
