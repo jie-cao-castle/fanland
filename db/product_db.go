@@ -37,7 +37,7 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, nft_id, tag_ids, create_time, update_time from product where id = ?", productId)
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, externalUrl, creatorId, tag_ids, create_time, update_time from product where id = ?", productId)
 
 	if err != nil {
 		return nil, err
@@ -160,7 +160,7 @@ func (f *ProductDB) GetListByUserId(userId uint64) ([]*dao.ProductDO, error) {
 
 func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 
-	query := "INSERT INTO product(product_name, product_desc,imgUrl, nft_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product(product_name, product_desc,imgUrl, externalUrl, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -170,7 +170,7 @@ func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.Tags)
+	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.ExternalUrl, product.Tags)
 	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
@@ -186,10 +186,9 @@ func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 }
 
 func (f *ProductDB) Update(product *dao.ProductDO) error {
-
 	query := "UPDATE product SET product_name=?, desc=?, tag_ids = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
-	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancelfunc()
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
 	if err != nil {
 		log.Fatal(err)
@@ -211,17 +210,17 @@ func (f *ProductDB) Update(product *dao.ProductDO) error {
 
 func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error) {
 	var (
-		name       string
-		desc       string
-		id         uint64
-		imgUrl     string
-		nftId      uint64
-		tags       string
-		createTime time.Time
-		updateTime time.Time
+		name        string
+		desc        string
+		id          uint64
+		imgUrl      string
+		externalUrl string
+		tags        string
+		createTime  time.Time
+		updateTime  time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, nft_id, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, external_url, tag_ids, create_time, update_time from product LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err
@@ -230,17 +229,20 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 	defer rows.Close()
 	var products []*dao.ProductDO
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
 
 		product := &dao.ProductDO{
-			Id:     id,
-			Name:   name,
-			Desc:   desc,
-			ImgUrl: imgUrl,
-			Tags:   tags,
+			Id:          id,
+			Name:        name,
+			Desc:        desc,
+			ImgUrl:      imgUrl,
+			ExternalUrl: externalUrl,
+			Tags:        tags,
+			CreateTime:  createTime,
+			UpdateTime:  updateTime,
 		}
 
 		products = append(products, product)
@@ -254,14 +256,14 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 
 func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
 	var (
-		name       string
-		desc       string
-		id         uint64
-		imgUrl     string
-		nftId      uint64
-		tags       string
-		createTime time.Time
-		updateTime time.Time
+		name        string
+		desc        string
+		id          uint64
+		imgUrl      string
+		externalUrl string
+		tags        string
+		createTime  time.Time
+		updateTime  time.Time
 	)
 
 	args := make([]interface{}, len(ids))
@@ -269,14 +271,14 @@ func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
 		args[i] = id
 	}
 
-	rows, err := f.db.Query("select id, tag_name, create_time, update_time from product_tag WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
+	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, external_url, tag_ids, create_time, update_time from product WHERE id IN (?"+strings.Repeat(",?", len(args)-1)+")", args)
 	defer rows.Close()
 	if err != nil {
 		return nil, err
 	}
 	var products []*dao.ProductDO
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}

@@ -24,8 +24,9 @@ func (f *ChainNetDB) Init() error {
 	return nil
 }
 
-func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
+func (f *ChainNetDB) GetByChainId(queryChainId uint64) (chainNet *dao.ChainNetDO, err error) {
 	var (
+		dbId       uint64
 		chainId    uint64
 		chainCode  string
 		chainName  string
@@ -33,7 +34,7 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, chain_code, chain_name, create_time, update_time from chain_net where id = ?", id)
+	rows, err := f.db.Query("select id, chain_code, chain_id, chain_name, create_time, update_time from chain_net where chain_id = ?", queryChainId)
 
 	if err != nil {
 		return nil, err
@@ -41,7 +42,7 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&chainId, &chainCode, &chainName, &createTime, &updateTime)
+		err := rows.Scan(&dbId, &chainId, &chainCode, &chainName, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -55,7 +56,8 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 	}
 
 	chainNetObj := &dao.ChainNetDO{
-		Id:         id,
+		Id:         dbId,
+		ChainId:    chainId,
 		ChainCode:  chainCode,
 		ChainName:  chainName,
 		CreateTime: createTime,
@@ -64,10 +66,10 @@ func (f *ChainNetDB) GetById(id uint64) (chainNet *dao.ChainNetDO, err error) {
 	return chainNetObj, nil
 }
 
-func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
+func (f *ChainNetDB) insert(chain *dao.ChainNetDO) (err error) {
 
-	query := "INSERT INTO chain_net(chain_code, chain_name, create_time, update_time) " +
-		"VALUES (?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO chain_net(chain_code, chain_id, chain_name, create_time, update_time) " +
+		"VALUES (?, ?, ? CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -77,7 +79,7 @@ func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, nft.ChainCode, nft.ChainName)
+	res, err := stmt.ExecContext(ctx, chain.ChainCode, chain.ChainId, chain.ChainName)
 	if err != nil {
 		log.Infof("Error %s when inserting row into chain net table", err)
 		return err
@@ -93,7 +95,7 @@ func (f *ChainNetDB) insert(nft *dao.ChainNetDO) (err error) {
 }
 
 func (f *ChainNetDB) update(chainNet *dao.ChainNetDO) error {
-	query := "UPDATE chain_net SET chain_code =?, chain_name=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE chain_net SET chain_code =?, chain_id =?, chain_name=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -101,7 +103,7 @@ func (f *ChainNetDB) update(chainNet *dao.ChainNetDO) error {
 		log.Error(err)
 		return err
 	}
-	res, err := stmt.ExecContext(ctx, chainNet.ChainCode, chainNet.ChainName, chainNet.Id)
+	res, err := stmt.ExecContext(ctx, chainNet.ChainCode, chainNet.ChainId, chainNet.ChainName, chainNet.Id)
 	if err != nil {
 		log.Error(err)
 		return err

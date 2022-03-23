@@ -26,9 +26,9 @@ func (f *NftContractDB) Open() error {
 
 func (f *NftContractDB) Insert(nftContract *dao.NftContractDO) (err error) {
 
-	query := "INSERT INTO nft_contract(product_id, chain_id, chain_code, chain_name, token_symbol, token_name, " +
+	query := "INSERT INTO nft_contract(product_id, chain_id, chain_code, token_symbol, token_name, " +
 		"contract_address, status, create_time, update_time) " +
-		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+		"VALUES (?, ?, ? ,?, ? ,?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -56,9 +56,7 @@ func (f *NftContractDB) Insert(nftContract *dao.NftContractDO) (err error) {
 
 func (f *NftContractDB) Update(nftContract *dao.NftContractDO) (err error) {
 
-	query := "INSERT INTO nft_contract(product_id, chain_id, chain_code, chain_name, token_symbol, token_name, " +
-		"contract_address, status, create_time, update_time) " +
-		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "UPDATE nft_contract SET status=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -68,8 +66,7 @@ func (f *NftContractDB) Update(nftContract *dao.NftContractDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, nftContract.ProductId, nftContract.ChainId, nftContract.ChainCode,
-		nftContract.TokenSymbol, nftContract.TokenName, nftContract.Status)
+	res, err := stmt.ExecContext(ctx, nftContract.Status, nftContract.Id)
 	if err != nil {
 		log.Errorf("Error %s when inserting row into products table", err)
 		return err

@@ -153,8 +153,9 @@ func (f *ProductSaleDB) GetList(limit int64, offset int64) ([]*dao.ProductSaleDO
 		fromUserId    uint64
 	)
 
-	rows, err := f.db.Query("select id, product_name, product_desc, imgUrl, nft_id, tag_ids, create_time, "+
-		"update_time from product LIMIT ? OFFSET ? ", limit, offset)
+	rows, err := f.db.Query("select id, product_id, product_name, chain_id, chain_code, chain_name,"+
+		"contract_id, price, price_unit, start_time, end_time, effective_time, status, create_time, "+
+		"update_time from product_sale LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
 		return nil, err

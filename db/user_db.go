@@ -23,7 +23,7 @@ func (f *UserDB) Open() error {
 	return nil
 }
 
-func (f *UserDB) Insert(tag *dao.UserDO) (err error) {
+func (f *UserDB) Insert(user *dao.UserDO) (err error) {
 
 	query := "INSERT INTO fanland_user (user_name, user_desc, avatar_url, create_time, update_time) VALUES (?, ?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -35,7 +35,34 @@ func (f *UserDB) Insert(tag *dao.UserDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx)
+	res, err := stmt.ExecContext(ctx, user.UserName, user.UserDesc, user.AvatarUrl)
+	if err != nil {
+		log.Printf("Error %s when inserting row into products table", err)
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+
+	return nil
+}
+
+func (f *UserDB) Update(user dao.UserDO) (err error) {
+
+	query := "UPDATE fanland_user SET user_name=?, user_desc =?, avatar_url =?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
+	stmt, err := f.db.PrepareContext(ctx, query)
+
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.ExecContext(ctx, user.UserName, user.UserDesc, user.AvatarUrl)
 	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
