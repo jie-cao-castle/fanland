@@ -51,7 +51,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	v1.POST("/products/tags", s.productService.GetProductsByTag)
 
 	v1.POST("/products/addSale", s.productService.AddProductSale)
-	v1.GET("/products/title", s.productService.GetTitleProduct)
+	v1.GET("/products/top", s.productService.GetTitleProduct)
 	v1.GET("/products/user/:uid", s.productService.GetUserProducts)
 
 	v1.POST("/asset/addContract", s.nftService.AddNFTContract)

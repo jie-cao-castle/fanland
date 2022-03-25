@@ -16,7 +16,7 @@ type ProductDB struct {
 
 func (f *ProductDB) Open() error {
 	db, err := sql.Open("mysql",
-		"root:root@tcp(127.0.0.1:3306)/"+f.dbName)
+		"root:root@tcp(127.0.0.1:3306)/"+f.dbName+"?parseTime=true")
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
@@ -89,7 +89,7 @@ func (f *ProductDB) GetTitleProduct() (*dao.ProductDO, error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &creatorId, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}

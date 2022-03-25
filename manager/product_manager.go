@@ -46,6 +46,9 @@ func (manager *ProductManager) GetTitleProduct() (*model.Product, error) {
 	if productDO == nil {
 		return nil, nil
 	}
+
+	manager.userDB.Open()
+	defer manager.userDB.Close()
 	userDO, err := manager.userDB.GetById(productDO.Id)
 
 	var product = converter.ConvertToProduct(productDO, userDO, nil)

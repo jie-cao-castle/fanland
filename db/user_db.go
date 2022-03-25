@@ -82,14 +82,13 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 		name       string
 		desc       string
 		id         uint64
-		imgUrl     string
-		nftId      uint64
-		tags       string
+		avatarUrl  string
+		userHash   string
 		createTime time.Time
 		updateTime time.Time
 	)
 
-	rows, err := f.db.Query("select id, user_name, user_desc, avatar_url, create_time, update_time from fanland_user where id = ?", userId)
+	rows, err := f.db.Query("select id, user_name, user_desc, avatar_url, user_hash, create_time, update_time from fanland_user where id = ?", userId)
 
 	if err != nil {
 		return nil, err
@@ -97,7 +96,7 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &avatarUrl, &userHash, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -114,7 +113,7 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 		Id:        id,
 		UserName:  name,
 		UserDesc:  desc,
-		AvatarUrl: imgUrl,
+		AvatarUrl: avatarUrl,
 	}
 	return user, nil
 }
