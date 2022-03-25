@@ -14,12 +14,12 @@ type UserDB struct {
 
 func (f *UserDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"root:root@tcp(127.0.0.1:3306)/"+f.dbName+"?parseTime=true")
+	f.db = db
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-	defer db.Close()
 	return nil
 }
 
@@ -115,6 +115,48 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 		UserName:  name,
 		UserDesc:  desc,
 		AvatarUrl: imgUrl,
+	}
+	return user, nil
+}
+
+func (f *UserDB) GetByName(userName string) (*dao.UserDO, error) {
+	var (
+		name       string
+		desc       string
+		id         uint64
+		avatarUrl  string
+		userHash   string
+		createTime time.Time
+		updateTime time.Time
+	)
+
+	rows, err := f.db.Query("select id, user_name, user_desc, avatar_url, user_hash, create_time, update_time from fanland_user where user_name = ?", userName)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	if rows.Next() {
+		err := rows.Scan(&id, &name, &desc, &avatarUrl, &userHash, &createTime, &updateTime)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		return nil, err
+	}
+
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+
+	user := &dao.UserDO{
+		Id:        id,
+		UserName:  name,
+		UserDesc:  desc,
+		AvatarUrl: avatarUrl,
+		UserHash:  userHash,
 	}
 	return user, nil
 }

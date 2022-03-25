@@ -13,6 +13,11 @@ type ListRequest struct {
 	Limit  uint64 `json:"limit"`
 }
 
+type LoginRequest struct {
+	UserName string `json:"userName"`
+	Password string `json:"password"`
+}
+
 type AddProductRequest struct {
 	Name        string `json:"name"`
 	ProductDesc string `json:"productDesc"`

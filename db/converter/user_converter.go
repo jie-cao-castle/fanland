@@ -14,6 +14,7 @@ func ConvertToUser(userDO *dao.UserDO) *model.User {
 		UserName:   userDO.UserName,
 		UserDesc:   userDO.UserDesc,
 		AvatarUrl:  userDO.AvatarUrl,
+		UserHash:   userDO.UserHash,
 		CreateTime: userDO.CreateTime,
 		UpdateTime: userDO.UpdateTime,
 	}

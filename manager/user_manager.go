@@ -12,6 +12,7 @@ type UserManager struct {
 }
 
 func (manager *UserManager) InitManager(options *common.ServerOptions) {
+	manager.userDB = &dao.UserDB{}
 	manager.userDB.InitDB(options.DbName)
 }
 
@@ -41,6 +42,17 @@ func (manager *UserManager) GetUser(userId uint64) (*model.User, error) {
 	manager.userDB.Open()
 	defer manager.userDB.Close()
 	userDO, err := manager.userDB.GetById(userId)
+	if err != nil {
+		return nil, err
+	}
+	user := converter.ConvertToUser(userDO)
+	return user, nil
+}
+
+func (manager *UserManager) GetUserByName(userName string) (*model.User, error) {
+	manager.userDB.Open()
+	defer manager.userDB.Close()
+	userDO, err := manager.userDB.GetByName(userName)
 	if err != nil {
 		return nil, err
 	}

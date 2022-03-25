@@ -41,37 +41,39 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	// Initialize all services
 	s.initService()
 
-	// product router
-	r.POST("/products/details", s.productService.GetProductById)
-	r.POST("/products/category", s.productService.GetProductsByCategoryId)
-	r.POST("/products/add", s.productService.AddProduct)
-	r.POST("/products/update", s.productService.UpdateProduct)
-	r.POST("/products/tags", s.productService.GetProductsByTag)
+	v1 := r.Group("/api/v1")
+	//v1.Use(s.authService.CORSMiddleware)
 
-	r.POST("/products/addSale", s.productService.AddProductSale)
-	r.GET("/products/title", s.productService.GetTitleProduct)
-	r.GET("/products/user/:uid", s.productService.GetUserProducts)
+	v1.POST("/products/details", s.productService.GetProductById)
+	v1.POST("/products/category", s.productService.GetProductsByCategoryId)
+	v1.POST("/products/add", s.productService.AddProduct)
+	v1.POST("/products/update", s.productService.UpdateProduct)
+	v1.POST("/products/tags", s.productService.GetProductsByTag)
 
-	r.POST("/asset/addContract", s.nftService.AddNFTContract)
-	r.POST("/asset/addOrder", s.nftService.AddNFTOrder)
-	r.POST("/asset/updateContract", s.nftService.UpdateNFTContract)
-	r.POST("/asset/updateOrder", s.nftService.UpdateNFTOrder)
-	r.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
-	r.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
+	v1.POST("/products/addSale", s.productService.AddProductSale)
+	v1.GET("/products/title", s.productService.GetTitleProduct)
+	v1.GET("/products/user/:uid", s.productService.GetUserProducts)
 
-	r.POST("/productsUpload/postContent", s.productUploadService.UploadProduct)
+	v1.POST("/asset/addContract", s.nftService.AddNFTContract)
+	v1.POST("/asset/addOrder", s.nftService.AddNFTOrder)
+	v1.POST("/asset/updateContract", s.nftService.UpdateNFTContract)
+	v1.POST("/asset/updateOrder", s.nftService.UpdateNFTOrder)
+	v1.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
+	v1.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
 
-	r.POST("/tags/products", s.productService.GetProductTags)
+	v1.POST("/productsUpload/postContent", s.productUploadService.UploadProduct)
 
-	r.POST("/category/list", s.categoryService.GetProductCategories)
+	v1.POST("/tags/products", s.productService.GetProductTags)
 
-	r.POST("/login", s.authService.Login)
-	r.GET("/logout", s.authService.Logout)
+	v1.POST("/category/list", s.categoryService.GetProductCategories)
 
-	private := r.Group("/private")
+	v1.GET("/user/logout", s.authService.Logout)
+	v1.POST("/user/login", s.authService.Login)
+	private := v1.Group("/user")
 	private.Use(s.authService.AuthRequired)
 	{
-		private.GET("/me", s.authService.Me)
+
+		private.GET("/current", s.authService.Me)
 		private.GET("/status", s.authService.Status)
 	}
 	s.engine = r
