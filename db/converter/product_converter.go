@@ -41,12 +41,15 @@ func ConvertToProductSale(saleDO *dao.ProductSaleDO) *model.ProductSale {
 }
 
 func ConvertAddReqToProduct(req *request.AddProductRequest) *model.Product {
+	creater := &model.User{Id: req.CreatorId}
+
 	product := &model.Product{
 		Name:        req.Name,
 		Desc:        req.ProductDesc,
 		Id:          req.Id,
 		ImgUrl:      req.ImgUrl,
 		ExternalUrl: req.ExternalUrl,
+		Creator:     creater,
 	}
 
 	return product

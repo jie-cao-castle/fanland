@@ -159,8 +159,7 @@ func (f *ProductDB) GetListByUserId(userId uint64) ([]*dao.ProductDO, error) {
 }
 
 func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
-
-	query := "INSERT INTO product(product_name, product_desc,image_url, external_url, creator_id, tag_ids, create_time, update_time) VALUES (?, ?, ? ,?, ? , CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+	query := "INSERT INTO product(product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time) VALUES (?,?,?,?,?,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -170,7 +169,7 @@ func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 	}
 	defer stmt.Close()
 
-	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.ExternalUrl, product.Tags)
+	res, err := stmt.ExecContext(ctx, product.Name, product.Desc, product.ImgUrl, product.ExternalUrl, product.CreatorId, product.Tags)
 	if err != nil {
 		log.Printf("Error %s when inserting row into products table", err)
 		return err
