@@ -32,7 +32,7 @@ func (s *ProductUploadService) UploadProduct(c *gin.Context) {
 	newFileName := uuid.New().String() + extension
 
 	// The file is received, so let's save it
-	if err := c.SaveUploadedFile(file, "/some/path/on/server/"+newFileName); err != nil {
+	if err := c.SaveUploadedFile(file, "./upload/"+newFileName); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}
