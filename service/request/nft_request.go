@@ -1,7 +1,5 @@
 package request
 
-import "time"
-
 type AddNftRequest struct {
 	Name        string `json:"name"`
 	ProductDesc string `json:"productDesc"`
@@ -12,15 +10,13 @@ type AddNftRequest struct {
 }
 
 type AddNftContractRequest struct {
-	ProductId       uint64    `json:"productId"`
-	ChainId         uint64    `json:"chainId"`
-	ChainCode       string    `json:"chainCode"`
-	ContractAddress string    `json:"contractAddress"`
-	Status          int8      `json:"status"`
-	TokenSymbol     string    `json:"tokenSymbol"`
-	TokenName       string    `json:"tokenName"`
-	CreateTime      time.Time `json:"createTime"`
-	UpdateTime      time.Time `json:"updateTime"`
+	ProductId       uint64 `json:"productId"`
+	ChainId         uint64 `json:"chainId"`
+	ChainCode       string `json:"chainCode"`
+	ContractAddress string `json:"contractAddress"`
+	Status          int8   `json:"status"`
+	TokenSymbol     string `json:"tokenSymbol"`
+	TokenName       string `json:"tokenName"`
 }
 type UpdateNftContractRequest struct {
 	Id uint64 `json:"id"`
@@ -31,18 +27,15 @@ type ProductContractRequest struct {
 }
 
 type AddNftOrderRequest struct {
-	Id              uint64    `json:"id"`
-	ProductId       uint64    `json:"productId"`
-	NftKey          string    `json:"nftKey"`
-	Price           uint64    `json:"price"`
-	PriceUnit       uint64    `json:"priceUnit"`
-	Amount          uint64    `json:"amount"`
-	Status          int8      `json:"status"`
-	ChainId         uint64    `json:"chainId"`
-	ChainCode       string    `json:"chainCode"`
-	TransactionHash string    `json:"transactionHash"`
-	CreateTime      time.Time `json:"createTime"`
-	UpdateTime      time.Time `json:"updateTime"`
+	ProductId       uint64 `json:"productId"`
+	NftKey          string `json:"nftKey"`
+	Price           uint64 `json:"price"`
+	PriceUnit       uint64 `json:"priceUnit"`
+	Amount          uint64 `json:"amount"`
+	Status          int8   `json:"status"`
+	ChainId         uint64 `json:"chainId"`
+	ChainCode       string `json:"chainCode"`
+	TransactionHash string `json:"transactionHash"`
 }
 type UpdateNftOrderRequest struct {
 	Id uint64 `json:"id"`

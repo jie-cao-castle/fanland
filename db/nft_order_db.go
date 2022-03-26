@@ -14,7 +14,7 @@ type NftOrderDB struct {
 
 func (f *NftOrderDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"root:root@tcp(127.0.0.1:3306)/"+f.dbName+"?parseTime=true")
 	f.db = db
 	if err != nil {
 		log.Fatal(err)

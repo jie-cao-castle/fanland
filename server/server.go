@@ -40,6 +40,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 
 	// Initialize all services
 	s.initService()
+	r.Static("/upload", "./upload")
 
 	v1 := r.Group("/api/v1")
 	//v1.Use(s.authService.CORSMiddleware)
@@ -61,7 +62,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	v1.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
 	v1.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
 
-	v1.POST("/productsUpload/postContent", s.productUploadService.UploadProduct)
+	v1.POST("/productsUpload/postContent", s.productUploadService.UploadProductImg)
 
 	v1.POST("/tags/products", s.productService.GetProductTags)
 
@@ -126,4 +127,7 @@ func (s *Server) initService() {
 
 	s.productUploadService = &service.ProductUploadService{}
 	s.productUploadService.InitService(s.options)
+
+	s.nftService = &service.NftService{}
+	s.nftService.InitService(s.options)
 }

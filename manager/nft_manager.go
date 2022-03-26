@@ -9,8 +9,17 @@ import (
 
 type NftManager struct {
 	nftContractDB *dao.NftContractDB
-	nftOrder      *dao.NftOrderDB
+	nftOrderDB    *dao.NftOrderDB
 	options       *common.ServerOptions
+}
+
+func (manager *NftManager) InitManager(options *common.ServerOptions) {
+	manager.options = options
+	manager.nftContractDB = &dao.NftContractDB{}
+	manager.nftOrderDB = &dao.NftOrderDB{}
+
+	manager.nftContractDB.InitDB(options.DbName)
+	manager.nftOrderDB.InitDB(options.DbName)
 }
 
 func (manager *NftManager) AddNFTContract(nft *model.NftContract) error {
@@ -53,19 +62,19 @@ func (manager *NftManager) GetProductContracts(productId uint64) ([]*model.NftCo
 }
 
 func (manager *NftManager) AddNFTOrder(nftOrder *model.NftOrder) error {
-	manager.nftOrder.Open()
-	defer manager.nftOrder.Close()
+	manager.nftOrderDB.Open()
+	defer manager.nftOrderDB.Close()
 	nftDO := converter.ConvertToNftOrderDO(nftOrder)
-	if err := manager.nftOrder.Insert(nftDO); err != nil {
+	if err := manager.nftOrderDB.Insert(nftDO); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (manager *NftManager) GetProductOrders(productId uint64) ([]*model.NftOrder, error) {
-	manager.nftOrder.Open()
-	defer manager.nftOrder.Close()
-	orderDOs, err := manager.nftOrder.GetListByProductId(productId)
+	manager.nftOrderDB.Open()
+	defer manager.nftOrderDB.Close()
+	orderDOs, err := manager.nftOrderDB.GetListByProductId(productId)
 	if err != nil {
 		return nil, err
 	}
@@ -80,10 +89,10 @@ func (manager *NftManager) GetProductOrders(productId uint64) ([]*model.NftOrder
 }
 
 func (manager *NftManager) UpdateNFTOrder(nftOrder *model.NftOrder) error {
-	manager.nftOrder.Open()
-	defer manager.nftOrder.Close()
+	manager.nftOrderDB.Open()
+	defer manager.nftOrderDB.Close()
 	nftOrderDO := converter.ConvertToNftOrderDO(nftOrder)
-	if err := manager.nftOrder.Update(nftOrderDO); err != nil {
+	if err := manager.nftOrderDB.Update(nftOrderDO); err != nil {
 		return err
 	}
 

@@ -5,13 +5,14 @@ import "time"
 type NftContract struct {
 	Id              uint64
 	ProductId       uint64
-	OfferId         uint64
-	NftId           uint64
-	Price           uint64
-	PriceUnit       uint64
-	Amount          uint64
+	ChainId         uint64
+	ChainCode       string
+	ContractAddress string
 	Status          int8
-	TransactionHash string
-	CreateTime      time.Time
-	UpdateTime      time.Time
+
+	TokenSymbol string
+	TokenName   string
+
+	CreateTime time.Time
+	UpdateTime time.Time
 }

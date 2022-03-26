@@ -82,9 +82,14 @@ func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Produ
 	if err != nil {
 		return nil, nil, err
 	}
-
+	manager.userDB.Open()
+	defer manager.productDB.Close()
+	userDO, err := manager.userDB.GetById(productDO.CreatorId)
+	if err != nil {
+		return nil, nil, err
+	}
 	var product *model.Product
-	product = converter.ConvertToProduct(productDO, nil, nil)
+	product = converter.ConvertToProduct(productDO, userDO, nil)
 	if len(productDO.Tags) != 0 {
 		tagIdStrs := strings.Split(productDO.Tags, ",")
 

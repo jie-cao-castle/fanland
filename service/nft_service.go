@@ -16,6 +16,12 @@ type NftService struct {
 	options    *common.ServerOptions
 }
 
+func (s *NftService) InitService(options *common.ServerOptions) {
+	s.options = options
+	s.nftManager = &manager.NftManager{}
+	s.nftManager.InitManager(options)
+}
+
 func (s *NftService) AddNFTContract(c *gin.Context) {
 	var req request.AddNftContractRequest
 

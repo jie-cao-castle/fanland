@@ -15,19 +15,19 @@ type NftContractDB struct {
 
 func (f *NftContractDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"root:root@tcp(127.0.0.1:3306)/"+f.dbName+"?parseTime=true")
+	f.db = db
 	if err != nil {
 		log.Fatal(err)
 		return err
 	}
-	defer db.Close()
 	return nil
 }
 
 func (f *NftContractDB) Insert(nftContract *dao.NftContractDO) (err error) {
 
 	query := "INSERT INTO nft_contract(product_id, chain_id, chain_code, token_symbol, token_name, " +
-		"contract_address, status, create_time, update_time) " +
+		"contract_address, contract_status, create_time, update_time) " +
 		"VALUES (?, ?, ? ,?, ? ,?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
@@ -39,7 +39,7 @@ func (f *NftContractDB) Insert(nftContract *dao.NftContractDO) (err error) {
 	defer stmt.Close()
 
 	res, err := stmt.ExecContext(ctx, nftContract.ProductId, nftContract.ChainId, nftContract.ChainCode,
-		nftContract.TokenSymbol, nftContract.TokenName, nftContract.Status)
+		nftContract.TokenSymbol, nftContract.TokenName, nftContract.ContractAddress, nftContract.Status)
 	if err != nil {
 		log.Errorf("Error %s when inserting row into products table", err)
 		return err
@@ -98,7 +98,7 @@ func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftCon
 	)
 
 	rows, err := f.db.Query("select id, product_id, chain_id, chain_code, "+
-		"contract_address, status, token_symbol, token_name, create_time, "+
+		"contract_address, contract_status, token_symbol, token_name, create_time, "+
 		"update_time from nft_contract WHERE product_id = ? ", queryProductId)
 
 	if err != nil {
