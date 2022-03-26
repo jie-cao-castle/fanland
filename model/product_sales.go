@@ -12,10 +12,11 @@ type ProductSale struct {
 	ContractId    uint64
 	Price         uint64
 	PriceUnit     uint64
-	StartTime     uint64
-	EndTime       uint64
-	EffectiveTime uint64
+	StartTime     time.Time
+	EndTime       time.Time
+	EffectiveTime time.Time
 	Status        int16
 	CreateTime    time.Time
 	UpdateTime    time.Time
+	FromUserId    uint64
 }

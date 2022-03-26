@@ -219,8 +219,8 @@ func (manager *ProductManager) AddProduct(product *model.Product) error {
 }
 
 func (manager *ProductManager) AddProductSale(product *model.ProductSale) error {
-	manager.productDB.Open()
-	defer manager.productDB.Close()
+	manager.productSaleDB.Open()
+	defer manager.productSaleDB.Close()
 	productDO := converter.ConvertToProductSaleDO(product)
 	if err := manager.productSaleDB.Insert(productDO); err != nil {
 		return err

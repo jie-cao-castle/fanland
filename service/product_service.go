@@ -94,6 +94,7 @@ func (s *ProductService) AddProductSale(c *gin.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
+		return
 	}
 
 	var productSale *model.ProductSale
@@ -101,6 +102,7 @@ func (s *ProductService) AddProductSale(c *gin.Context) {
 	if err := s.productManager.AddProductSale(productSale); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
+		return
 	}
 
 	res := response.GenericResponse{Success: true, Result: productSale}

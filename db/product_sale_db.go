@@ -27,7 +27,7 @@ func (f *ProductSaleDB) Open() error {
 func (f *ProductSaleDB) Insert(product *dao.ProductSaleDO) (err error) {
 
 	query := "INSERT INTO product_sale(product_id, product_name, chain_id, chain_code, chain_name, contract_id, " +
-		"price, priceUnit, start_time, end_time, effective_time, status, " +
+		"price, price_unit, start_time, end_time, effective_time, sale_status, " +
 		"from_user_id, create_time, update_time) VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, ?, ?, ?, ?, CURRENT_TIMESTAMP, " +
 		"CURRENT_TIMESTAMP)"
 
@@ -79,9 +79,9 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 		contractId    uint64
 		price         uint64
 		priceUnit     uint64
-		startTime     uint64
-		endTime       uint64
-		effectiveTime uint64
+		startTime     time.Time
+		endTime       time.Time
+		effectiveTime time.Time
 		status        int16
 		createTime    time.Time
 		updateTime    time.Time
@@ -144,9 +144,9 @@ func (f *ProductSaleDB) GetList(limit int64, offset int64) ([]*dao.ProductSaleDO
 		contractId    uint64
 		price         uint64
 		priceUnit     uint64
-		startTime     uint64
-		endTime       uint64
-		effectiveTime uint64
+		startTime     time.Time
+		endTime       time.Time
+		effectiveTime time.Time
 		status        int16
 		createTime    time.Time
 		updateTime    time.Time
