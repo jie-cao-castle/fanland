@@ -27,14 +27,15 @@ func (f *ProductDB) Open() error {
 
 func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 	var (
-		name       string
-		desc       string
-		id         uint64
-		imgUrl     string
-		nftId      uint64
-		tags       string
-		createTime time.Time
-		updateTime time.Time
+		name        string
+		desc        string
+		id          uint64
+		imgUrl      string
+		externalUrl string
+		creatorId   uint64
+		tags        string
+		createTime  time.Time
+		updateTime  time.Time
 	)
 
 	rows, err := f.db.Query("select id, product_name, product_desc, image_url, external_url, creator_id, tag_ids, create_time, update_time from product where id = ?", productId)
@@ -45,7 +46,7 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 
 	defer rows.Close()
 	if rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &nftId, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &creatorId, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -59,11 +60,13 @@ func (f *ProductDB) GetById(productId uint64) (*dao.ProductDO, error) {
 	}
 
 	product := &dao.ProductDO{
-		Id:     id,
-		Name:   name,
-		Desc:   desc,
-		ImgUrl: imgUrl,
-		Tags:   tags,
+		Id:          id,
+		Name:        name,
+		Desc:        desc,
+		ImgUrl:      imgUrl,
+		ExternalUrl: externalUrl,
+		CreatorId:   creatorId,
+		Tags:        tags,
 	}
 	return product, nil
 }
@@ -176,10 +179,13 @@ func (f *ProductDB) Insert(product *dao.ProductDO) (err error) {
 	}
 
 	_, err = res.RowsAffected()
+
 	if err != nil {
 		log.Printf("Error %s when finding rows affected", err)
 		return err
 	}
+	lastId, _ := res.LastInsertId()
+	product.Id = uint64(lastId)
 
 	return nil
 }

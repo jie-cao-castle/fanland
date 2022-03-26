@@ -83,12 +83,9 @@ func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Produ
 		return nil, nil, err
 	}
 
-	manager.nftDB.Open()
-	defer manager.nftDB.Close()
-	manager.nftDB.Close()
-
 	var product *model.Product
-	if len(productDO.Tags) > 0 {
+	product = converter.ConvertToProduct(productDO, nil, nil)
+	if len(productDO.Tags) != 0 {
 		tagIdStrs := strings.Split(productDO.Tags, ",")
 
 		var tagIds []uint64
@@ -100,16 +97,15 @@ func (manager *ProductManager) GetProductDetails(productId uint64) (*model.Produ
 
 			tagIds = append(tagIds, intVar)
 		}
-
-		manager.productTagDB.Init()
-		defer manager.nftDB.Close()
-		tags, err := manager.productTagDB.GetListByIds(tagIds)
+		manager.productTagDB.Open()
+		defer manager.productTagDB.Close()
+		_, err := manager.productTagDB.GetListByIds(tagIds)
 		if err != nil {
 			return nil, nil, err
 		}
-		product = converter.ConvertToProduct(productDO, nil, tags)
 	}
-
+	manager.productSaleDB.Open()
+	defer manager.productSaleDB.Close()
 	salesDO, err := manager.productSaleDB.GetListByProductId(product.Id)
 	var sales []*model.ProductSale
 	for _, saleDO := range salesDO {
@@ -213,7 +209,7 @@ func (manager *ProductManager) AddProduct(product *model.Product) error {
 	if err := manager.productDB.Insert(productDO); err != nil {
 		return err
 	}
-
+	product.Id = productDO.Id
 	return nil
 }
 

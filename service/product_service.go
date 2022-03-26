@@ -50,7 +50,7 @@ func (s *ProductService) GetUserProducts(c *gin.Context) {
 }
 
 func (s *ProductService) GetProductById(c *gin.Context) {
-	var req request.ProductByIdRequest
+	var req request.AddProductRequest
 
 	if err := c.BindJSON(&req); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
@@ -60,7 +60,7 @@ func (s *ProductService) GetProductById(c *gin.Context) {
 	var product *model.Product
 	var sales []*model.ProductSale
 	var err error
-	if product, sales, err = s.productManager.GetProductDetails(req.ProductId); err != nil {
+	if product, sales, err = s.productManager.GetProductDetails(req.Id); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}
@@ -156,7 +156,7 @@ func (s *ProductService) GetProductTags(c *gin.Context) {
 	var tags []*model.ProductTag
 	var err error
 
-	if tags, err = s.productManager.GetProductTagsByProductId(req.ProductId); err != nil {
+	if tags, err = s.productManager.GetProductTagsByProductId(req.Id); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}

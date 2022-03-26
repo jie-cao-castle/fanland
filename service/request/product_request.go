@@ -1,7 +1,7 @@
 package request
 
 type ProductByIdRequest struct {
-	ProductId uint64 `json:"productId"`
+	Id uint64 `json:"id"`
 }
 
 type ProductsByCategoryIdRequest struct {
