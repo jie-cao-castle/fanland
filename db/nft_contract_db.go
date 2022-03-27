@@ -81,6 +81,33 @@ func (f *NftContractDB) Update(nftContract *dao.NftContractDO) (err error) {
 	return nil
 }
 
+func (f *NftContractDB) UpdateToken(nftContract *dao.NftContractDO) (err error) {
+
+	query := "UPDATE nft_contract SET next_token_id=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelfunc()
+	stmt, err := f.db.PrepareContext(ctx, query)
+
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+
+	res, err := stmt.ExecContext(ctx, nftContract.NextTokenId, nftContract.Id)
+	if err != nil {
+		log.Errorf("Error %s when inserting row into products table", err)
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		log.Errorf("Error %s when finding rows affected", err)
+		return err
+	}
+
+	return nil
+}
+
 func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftContractDO, error) {
 	var (
 		id              uint64
@@ -92,13 +119,15 @@ func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftCon
 
 		tokenSymbol string
 		tokenName   string
+		tokenAmount uint64
+		nextTokenId uint64
 
 		createTime time.Time
 		updateTime time.Time
 	)
 
 	rows, err := f.db.Query("select id, product_id, chain_id, chain_code, "+
-		"contract_address, contract_status, token_symbol, token_name, create_time, "+
+		"contract_address, contract_status, token_symbol, token_name, token_amount, next_token_id, create_time, "+
 		"update_time from nft_contract WHERE product_id = ? ", queryProductId)
 
 	if err != nil {
@@ -109,7 +138,7 @@ func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftCon
 	var contractDOs []*dao.NftContractDO
 	for rows.Next() {
 		err := rows.Scan(&id, &productId, &chainId, &chainCode, &contractAddress, &status,
-			&tokenSymbol, &tokenName, &createTime, &updateTime)
+			&tokenSymbol, &tokenName, &tokenAmount, &nextTokenId, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -134,4 +163,61 @@ func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftCon
 		return nil, err
 	}
 	return contractDOs, nil
+}
+
+func (f *NftContractDB) GetByChainId(queryProductId uint64, queryChainId uint64) (*dao.NftContractDO, error) {
+	var (
+		id              uint64
+		productId       uint64
+		chainId         uint64
+		chainCode       string
+		contractAddress string
+		status          int8
+
+		tokenSymbol string
+		tokenName   string
+		tokenAmount uint64
+		nextTokenId uint64
+
+		createTime time.Time
+		updateTime time.Time
+	)
+
+	rows, err := f.db.Query("select id, product_id, chain_id, chain_code, "+
+		"contract_address, contract_status, token_symbol, token_name, token_amount, next_token_id, create_time, "+
+		"update_time from nft_contract WHERE product_id = ? AND chain_id = ? LIMIT 1", queryProductId, queryChainId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	defer rows.Close()
+	var contractDO *dao.NftContractDO
+	if rows.Next() {
+		err := rows.Scan(&id, &productId, &chainId, &chainCode, &contractAddress, &status,
+			&tokenSymbol, &tokenName, &tokenAmount, &nextTokenId, &createTime, &updateTime)
+		if err != nil {
+			return nil, err
+		}
+
+		contractDO = &dao.NftContractDO{
+			Id:              id,
+			ProductId:       productId,
+			ChainId:         chainId,
+			ChainCode:       chainCode,
+			ContractAddress: contractAddress,
+			Status:          status,
+			TokenSymbol:     tokenSymbol,
+			TokenName:       tokenName,
+			TokenAmount:     tokenAmount,
+			NextTokenId:     nextTokenId,
+			CreateTime:      createTime,
+			UpdateTime:      updateTime,
+		}
+	}
+	err = rows.Err()
+	if err != nil {
+		return nil, err
+	}
+	return contractDO, nil
 }

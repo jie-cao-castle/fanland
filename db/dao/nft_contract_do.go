@@ -13,6 +13,8 @@ type NftContractDO struct {
 	TokenSymbol string
 	TokenName   string
 
-	CreateTime time.Time
-	UpdateTime time.Time
+	CreateTime  time.Time
+	UpdateTime  time.Time
+	TokenAmount uint64
+	NextTokenId uint64
 }

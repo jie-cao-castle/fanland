@@ -60,4 +60,5 @@ type AddProductSaleRequest struct {
 	EffectiveTime time.Time `json:"effectiveTime"`
 	Status        int16     `json:"status"`
 	FromUserId    uint64    `json:"fromUserId"`
+	TokenId       string    `json:"tokenId"`
 }

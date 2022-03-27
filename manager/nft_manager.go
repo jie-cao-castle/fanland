@@ -44,6 +44,17 @@ func (manager *NftManager) UpdateNFTContract(nft *model.NftContract) error {
 	return nil
 }
 
+func (manager *NftManager) UpdateNFTContractTokenId(nft *model.NftContract) error {
+	manager.nftContractDB.Open()
+	defer manager.nftContractDB.Close()
+	nftDO := converter.ConvertToNftContractDO(nft)
+	if err := manager.nftContractDB.UpdateToken(nftDO); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (manager *NftManager) GetProductContracts(productId uint64) ([]*model.NftContract, error) {
 	manager.nftContractDB.Open()
 	defer manager.nftContractDB.Close()
@@ -59,6 +70,18 @@ func (manager *NftManager) GetProductContracts(productId uint64) ([]*model.NftCo
 	}
 
 	return contracts, nil
+}
+
+func (manager *NftManager) GetProductContractInChainId(productId uint64, chainId uint64) (*model.NftContract, error) {
+	manager.nftContractDB.Open()
+	defer manager.nftContractDB.Close()
+	contractDO, err := manager.nftContractDB.GetByChainId(productId, chainId)
+	if err != nil {
+		return nil, err
+	}
+
+	contract := converter.ConvertToNftContract(contractDO)
+	return contract, nil
 }
 
 func (manager *NftManager) AddNFTOrder(nftOrder *model.NftOrder) error {

@@ -17,6 +17,8 @@ type AddNftContractRequest struct {
 	Status          int8   `json:"status"`
 	TokenSymbol     string `json:"tokenSymbol"`
 	TokenName       string `json:"tokenName"`
+	TokenAmount     uint64 `json:"tokenAmount"`
+	NextTokenId     uint64 `json:"nextTokenId"`
 }
 type UpdateNftContractRequest struct {
 	Id     uint64 `json:"id"`

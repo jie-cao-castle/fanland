@@ -52,15 +52,16 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	v1.POST("/products/tags", s.productService.GetProductsByTag)
 
 	v1.POST("/products/addSale", s.productService.AddProductSale)
+
 	v1.GET("/products/top", s.productService.GetTitleProduct)
 	v1.GET("/products/user/:uid", s.productService.GetUserProducts)
 
 	v1.POST("/asset/addContract", s.nftService.AddNFTContract)
-	v1.POST("/asset/addOrder", s.nftService.AddNFTOrder)
+	v1.POST("/asset/addNftOrder", s.nftService.AddNFTOrder)
 	v1.POST("/asset/updateContract", s.nftService.UpdateNFTContract)
-	v1.POST("/asset/updateOrder", s.nftService.UpdateNFTOrder)
+	v1.POST("/asset/updateNftOrder", s.nftService.UpdateNFTOrder)
 	v1.POST("/asset/contracts", s.nftService.GetNFTContractsByProduct)
-	v1.POST("/asset/orders", s.nftService.GetNFTOrdersByProduct)
+	v1.POST("/asset/nftOrders", s.nftService.GetNFTOrdersByProduct)
 
 	v1.POST("/productsUpload/postContent", s.productUploadService.UploadProductImg)
 

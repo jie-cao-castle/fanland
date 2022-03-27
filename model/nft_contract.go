@@ -9,10 +9,10 @@ type NftContract struct {
 	ChainCode       string
 	ContractAddress string
 	Status          int8
-
-	TokenSymbol string
-	TokenName   string
-
-	CreateTime time.Time
-	UpdateTime time.Time
+	TokenSymbol     string
+	TokenName       string
+	TokenAmount     uint64
+	NextTokenId     uint64
+	CreateTime      time.Time
+	UpdateTime      time.Time
 }

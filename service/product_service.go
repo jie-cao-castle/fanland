@@ -14,6 +14,7 @@ import (
 
 type ProductService struct {
 	productManager *manager.ProductManager
+	nftManager     *manager.NftManager
 	options        *common.ServerOptions
 }
 
@@ -21,6 +22,8 @@ func (s *ProductService) InitService(options *common.ServerOptions) {
 	s.options = options
 	s.productManager = &manager.ProductManager{}
 	s.productManager.InitManager(options)
+	s.nftManager = &manager.NftManager{}
+	s.nftManager.InitManager(options)
 }
 
 func (s *ProductService) GetTitleProduct(c *gin.Context) {
@@ -97,9 +100,24 @@ func (s *ProductService) AddProductSale(c *gin.Context) {
 		return
 	}
 
+	contract, err := s.nftManager.GetProductContractInChainId(req.ProductId, req.ChainId)
+	if err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
 	var productSale *model.ProductSale
 	productSale = converter.ConvertReqToProductSale(&req)
+	productSale.TokenId = strconv.FormatUint(contract.NextTokenId, 10)
 	if err := s.productManager.AddProductSale(productSale); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+	contract.NextTokenId++
+	err = s.nftManager.UpdateNFTContractTokenId(contract)
+	if err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 		return

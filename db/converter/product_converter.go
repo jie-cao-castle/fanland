@@ -34,6 +34,7 @@ func ConvertToProductSale(saleDO *dao.ProductSaleDO) *model.ProductSale {
 		StartTime:   saleDO.StartTime,
 		EndTime:     saleDO.EndTime,
 		Status:      saleDO.Status,
+		TokenId:     saleDO.TokenId,
 		CreateTime:  saleDO.CreateTime,
 		UpdateTime:  saleDO.UpdateTime,
 	}
@@ -81,6 +82,7 @@ func ConvertToProductSaleDO(product *model.ProductSale) *dao.ProductSaleDO {
 		EffectiveTime: product.EffectiveTime,
 		Status:        product.Status,
 		FromUserId:    product.FromUserId,
+		TokenId:       product.TokenId,
 	}
 	return productDo
 }
@@ -98,6 +100,7 @@ func ConvertReqToProductSale(req *request.AddProductSaleRequest) *model.ProductS
 		EffectiveTime: req.EffectiveTime,
 		Status:        req.Status,
 		FromUserId:    req.FromUserId,
+		TokenId:       req.TokenId,
 	}
 	return productSale
 }

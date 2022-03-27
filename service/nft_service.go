@@ -99,21 +99,21 @@ func (s *NftService) GetNFTOrdersByProduct(c *gin.Context) {
 }
 
 func (s *NftService) UpdateNFTOrder(c *gin.Context) {
-	var req request.UpdateNftContractRequest
+	var req request.UpdateNftOrderRequest
 
 	if err := c.BindJSON(&req); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}
 
-	var contract *model.NftContract
-	contract = converter.ConvertReqToUpdateNftContract(&req)
-	if err := s.nftManager.UpdateNFTContract(contract); err != nil {
+	var order *model.NftOrder
+	order = converter.ConvertReqToUpdateNftOrder(&req)
+	if err := s.nftManager.UpdateNFTOrder(order); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
 	}
 
-	res := response.GenericResponse{Success: true, Result: contract}
+	res := response.GenericResponse{Success: true, Result: order}
 	c.JSON(http.StatusOK, res)
 }
 

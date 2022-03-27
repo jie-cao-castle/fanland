@@ -28,7 +28,7 @@ func (f *ProductSaleDB) Insert(product *dao.ProductSaleDO) (err error) {
 
 	query := "INSERT INTO product_sale(product_id, product_name, chain_id, chain_code, chain_name, contract_id, " +
 		"price, price_unit, start_time, end_time, effective_time, sale_status, " +
-		"from_user_id, create_time, update_time) VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, ?, ?, ?, ?, CURRENT_TIMESTAMP, " +
+		"from_user_id, token_id, create_time, update_time) VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP, " +
 		"CURRENT_TIMESTAMP)"
 
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -52,7 +52,8 @@ func (f *ProductSaleDB) Insert(product *dao.ProductSaleDO) (err error) {
 		product.EndTime,
 		product.EffectiveTime,
 		product.Status,
-		product.FromUserId)
+		product.FromUserId,
+		product.TokenId)
 
 	if err != nil {
 		log.Printf("Error %s when inserting row into product_sale table", err)
@@ -86,11 +87,12 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 		createTime    time.Time
 		updateTime    time.Time
 		fromUserId    uint64
+		tokenId       string
 	)
 
 	rows, err := f.db.Query("select id, product_id, product_name, chain_id, chain_code, chain_name,"+
-		"contract_id, price, price_unit, start_time, end_time, effective_time, status, create_time, "+
-		"update_time from product_sales WHERE product_id = ? ", queryProductId)
+		"contract_id, price, price_unit, start_time, end_time, effective_time, sale_status, from_user_id, token_id, create_time, "+
+		"update_time from product_sale WHERE product_id = ? ", queryProductId)
 
 	if err != nil {
 		return nil, err
@@ -100,7 +102,7 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 	var productSales []*dao.ProductSaleDO
 	for rows.Next() {
 		err := rows.Scan(&id, &productId, &productName, &chainId, &chainCode, &chainName, &contractId, &price,
-			&priceUnit, &startTime, &endTime, &effectiveTime, &status, &fromUserId, &createTime, &updateTime)
+			&priceUnit, &startTime, &endTime, &effectiveTime, &status, &fromUserId, &tokenId, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -122,6 +124,7 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 			CreateTime:    createTime,
 			UpdateTime:    updateTime,
 			FromUserId:    fromUserId,
+			TokenId:       tokenId,
 		}
 
 		productSales = append(productSales, productSale)
@@ -151,10 +154,11 @@ func (f *ProductSaleDB) GetList(limit int64, offset int64) ([]*dao.ProductSaleDO
 		createTime    time.Time
 		updateTime    time.Time
 		fromUserId    uint64
+		tokenId       string
 	)
 
 	rows, err := f.db.Query("select id, product_id, product_name, chain_id, chain_code, chain_name,"+
-		"contract_id, price, price_unit, start_time, end_time, effective_time, status, create_time, "+
+		"contract_id, price, price_unit, start_time, end_time, effective_time, sale_status, from_user_id, token_id, create_time, "+
 		"update_time from product_sale LIMIT ? OFFSET ? ", limit, offset)
 
 	if err != nil {
@@ -187,6 +191,7 @@ func (f *ProductSaleDB) GetList(limit int64, offset int64) ([]*dao.ProductSaleDO
 			CreateTime:    createTime,
 			UpdateTime:    updateTime,
 			FromUserId:    fromUserId,
+			TokenId:       tokenId,
 		}
 
 		productSales = append(productSales, productSale)

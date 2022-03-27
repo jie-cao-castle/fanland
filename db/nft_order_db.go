@@ -25,7 +25,7 @@ func (f *NftOrderDB) Open() error {
 
 func (f *NftOrderDB) Insert(nftOrder *dao.NftOrderDO) (err error) {
 
-	query := "INSERT INTO nft_order(product_id, chain_id, chain_code, nft_key, price, price_unit, amount, order_status " +
+	query := "INSERT INTO nft_order(product_id, chain_id, chain_code, nft_key, price, price_unit, amount, order_status, " +
 		"transaction_hash, create_time, update_time) " +
 		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
@@ -69,8 +69,8 @@ func (f *NftOrderDB) GetListByProductId(queryProductId uint64) ([]*dao.NftOrderD
 		updateTime      time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_id, nft_key, price, price_unit, amount, status, chain_id, "+
-		"chain_code, transaction_hash, create_time, update_time from product_category WHENEVER product_id = ? ", queryProductId)
+	rows, err := f.db.Query("select id, product_id, nft_key, price, price_unit, amount, order_status, chain_id, "+
+		"chain_code, transaction_hash, create_time, update_time from nft_order WHERE product_id = ? ", queryProductId)
 
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (f *NftOrderDB) GetListByProductId(queryProductId uint64) ([]*dao.NftOrderD
 
 func (f *NftOrderDB) Update(nftOrder *dao.NftOrderDO) (err error) {
 
-	query := "UPDATE nft_contract SET status=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE nft_order SET order_status = ?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelFunc()
 	stmt, err := f.db.PrepareContext(ctx, query)

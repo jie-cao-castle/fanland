@@ -16,6 +16,8 @@ func ConvertToNftContractDO(contract *model.NftContract) *dao.NftContractDO {
 		ContractAddress: contract.ContractAddress,
 		Status:          contract.Status,
 		ProductId:       contract.ProductId,
+		TokenAmount:     contract.TokenAmount,
+		NextTokenId:     contract.NextTokenId,
 		CreateTime:      contract.CreateTime,
 		UpdateTime:      contract.UpdateTime,
 	}
@@ -31,6 +33,8 @@ func ConvertToNftContract(contractDO *dao.NftContractDO) *model.NftContract {
 		ContractAddress: contractDO.ContractAddress,
 		Status:          contractDO.Status,
 		ProductId:       contractDO.ProductId,
+		TokenAmount:     contractDO.TokenAmount,
+		NextTokenId:     contractDO.NextTokenId,
 		CreateTime:      contractDO.CreateTime,
 		UpdateTime:      contractDO.UpdateTime,
 	}
@@ -45,6 +49,8 @@ func ConvertReqToNftContract(req *request.AddNftContractRequest) *model.NftContr
 		ContractAddress: req.ContractAddress,
 		Status:          req.Status,
 		ProductId:       req.ProductId,
+		TokenAmount:     req.TokenAmount,
+		NextTokenId:     req.NextTokenId,
 	}
 	return contract
 }
