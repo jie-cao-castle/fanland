@@ -51,14 +51,8 @@ func ConvertReqToNftContract(req *request.AddNftContractRequest) *model.NftContr
 
 func ConvertReqToUpdateNftContract(req *request.UpdateNftContractRequest) *model.NftContract {
 	contract := &model.NftContract{
-		Id:              req.Id,
-		TokenName:       req.TokenName,
-		TokenSymbol:     req.TokenSymbol,
-		ChainId:         req.ChainId,
-		ChainCode:       req.ChainCode,
-		ContractAddress: req.ContractAddress,
-		Status:          req.Status,
-		ProductId:       req.ProductId,
+		Id:     req.Id,
+		Status: req.Status,
 	}
 	return contract
 }

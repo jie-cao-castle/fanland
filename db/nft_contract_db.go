@@ -56,7 +56,7 @@ func (f *NftContractDB) Insert(nftContract *dao.NftContractDO) (err error) {
 
 func (f *NftContractDB) Update(nftContract *dao.NftContractDO) (err error) {
 
-	query := "UPDATE nft_contract SET status=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+	query := "UPDATE nft_contract SET contract_status=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)

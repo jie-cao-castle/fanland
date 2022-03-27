@@ -19,8 +19,8 @@ type AddNftContractRequest struct {
 	TokenName       string `json:"tokenName"`
 }
 type UpdateNftContractRequest struct {
-	Id uint64 `json:"id"`
-	AddNftContractRequest
+	Id     uint64 `json:"id"`
+	Status int8   `json:"status"`
 }
 type ProductContractRequest struct {
 	ProductId uint64 `json:"productId"`
