@@ -65,7 +65,7 @@ func (manager *ProductManager) GetProductsByUserId(userId uint64) ([]*model.Prod
 
 	var products []*model.Product
 	for i, productDO := range productDOs {
-		userDO, err := manager.userDB.GetById(productDO.Id)
+		userDO, err := manager.userDB.GetById(productDO.CreatorId)
 		if err != nil {
 			return nil, err
 		}
@@ -140,10 +140,36 @@ func (manager *ProductManager) GetProductsByCategory(categoryId uint64) ([]*mode
 	}
 
 	var products []*model.Product
-	for i, productDO := range productDOs {
-		products[i] = converter.ConvertToProduct(productDO, nil, nil)
+	for _, productDO := range productDOs {
+		product := converter.ConvertToProduct(productDO, nil, nil)
+		products = append(products, product)
 	}
 
+	return products, nil
+}
+
+func (manager *ProductManager) GetTrendingProducts() ([]*model.Product, error) {
+	manager.productDB.Open()
+
+	productDOs, err := manager.productDB.GetList(100, 0)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var products []*model.Product
+
+	for _, productDO := range productDOs {
+		manager.userDB.Open()
+		userDO, err := manager.userDB.GetById(productDO.CreatorId)
+		if err != nil {
+			return nil, err
+		}
+		product := converter.ConvertToProduct(productDO, userDO, nil)
+		products = append(products, product)
+		manager.userDB.Close()
+	}
+	manager.productDB.Close()
 	return products, nil
 }
 

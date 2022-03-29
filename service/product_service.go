@@ -165,6 +165,19 @@ func (s *ProductService) GetProductsByCategoryId(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (s *ProductService) GetTrendingProducts(c *gin.Context) {
+	var products []*model.Product
+	var err error
+	if products, err = s.productManager.GetTrendingProducts(); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	res := response.GenericResponse{Success: true, Result: products}
+	c.JSON(http.StatusOK, res)
+}
+
 func (s *ProductService) GetProductTags(c *gin.Context) {
 	var req request.ProductByIdRequest
 

@@ -47,6 +47,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 
 	v1.POST("/products/details", s.productService.GetProductById)
 	v1.POST("/products/category", s.productService.GetProductsByCategoryId)
+
 	v1.POST("/products/add", s.productService.AddProduct)
 	v1.POST("/products/update", s.productService.UpdateProduct)
 	v1.POST("/products/tags", s.productService.GetProductsByTag)
@@ -54,6 +55,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	v1.POST("/products/addSale", s.productService.AddProductSale)
 
 	v1.GET("/products/top", s.productService.GetTitleProduct)
+	v1.GET("/products/trending", s.productService.GetTrendingProducts)
 	v1.GET("/products/user/:uid", s.productService.GetUserProducts)
 
 	v1.POST("/asset/addContract", s.nftService.AddNFTContract)

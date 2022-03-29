@@ -213,7 +213,7 @@ func (f *ProductDB) Update(product *dao.ProductDO) error {
 	return err
 }
 
-func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error) {
+func (f *ProductDB) GetList(limit int64, offset int64) ([]*dao.ProductDO, error) {
 	var (
 		name        string
 		desc        string
@@ -221,6 +221,7 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 		imgUrl      string
 		externalUrl string
 		tags        string
+		creatorId   uint64
 		createTime  time.Time
 		updateTime  time.Time
 	)
@@ -234,7 +235,7 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 	defer rows.Close()
 	var products []*dao.ProductDO
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &creatorId, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -246,6 +247,7 @@ func (f *ProductDB) getList(limit int64, offset int64) ([]*dao.ProductDO, error)
 			ImgUrl:      imgUrl,
 			ExternalUrl: externalUrl,
 			Tags:        tags,
+			CreatorId:   creatorId,
 			CreateTime:  createTime,
 			UpdateTime:  updateTime,
 		}
@@ -266,6 +268,7 @@ func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
 		id          uint64
 		imgUrl      string
 		externalUrl string
+		creatorId   uint64
 		tags        string
 		createTime  time.Time
 		updateTime  time.Time
@@ -283,7 +286,7 @@ func (f *ProductDB) GetListByIds(ids []uint64) ([]*dao.ProductDO, error) {
 	}
 	var products []*dao.ProductDO
 	for rows.Next() {
-		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &tags, &createTime, &updateTime)
+		err := rows.Scan(&id, &name, &desc, &imgUrl, &externalUrl, &creatorId, &tags, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}

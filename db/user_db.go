@@ -94,7 +94,6 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 		return nil, err
 	}
 
-	defer rows.Close()
 	if rows.Next() {
 		err := rows.Scan(&id, &name, &desc, &avatarUrl, &userHash, &createTime, &updateTime)
 		if err != nil {
@@ -115,6 +114,8 @@ func (f *UserDB) GetById(userId uint64) (*dao.UserDO, error) {
 		UserDesc:  desc,
 		AvatarUrl: avatarUrl,
 	}
+
+	rows.Close()
 	return user, nil
 }
 
