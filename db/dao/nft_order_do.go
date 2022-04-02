@@ -13,6 +13,8 @@ type NftOrderDO struct {
 	ChainId         uint64
 	ChainCode       string
 	TransactionHash string
+	ToUserId        uint64
+	ToUserName      string
 	CreateTime      time.Time
 	UpdateTime      time.Time
 }

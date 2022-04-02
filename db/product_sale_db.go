@@ -87,12 +87,13 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 		createTime    time.Time
 		updateTime    time.Time
 		fromUserId    uint64
+		fromUserName  string
 		tokenId       string
 	)
 
-	rows, err := f.db.Query("select id, product_id, product_name, chain_id, chain_code, chain_name,"+
-		"contract_id, price, price_unit, start_time, end_time, effective_time, sale_status, from_user_id, token_id, create_time, "+
-		"update_time from product_sale WHERE product_id = ? ", queryProductId)
+	rows, err := f.db.Query("select s.id, s.product_id, s.product_name, s.chain_id, s.chain_code, s.chain_name,"+
+		"s.contract_id, s.price, s.price_unit, s.start_time, s.end_time, s.effective_time, s.sale_status, s.from_user_id, u.user_name, s.token_id, s.create_time, "+
+		"s.update_time from product_sale s INNER JOIN fanland_user u ON s.from_user_id = u.id WHERE s.product_id = ? ", queryProductId)
 
 	if err != nil {
 		return nil, err
@@ -102,7 +103,7 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 	var productSales []*dao.ProductSaleDO
 	for rows.Next() {
 		err := rows.Scan(&id, &productId, &productName, &chainId, &chainCode, &chainName, &contractId, &price,
-			&priceUnit, &startTime, &endTime, &effectiveTime, &status, &fromUserId, &tokenId, &createTime, &updateTime)
+			&priceUnit, &startTime, &endTime, &effectiveTime, &status, &fromUserId, &fromUserName, &tokenId, &createTime, &updateTime)
 		if err != nil {
 			return nil, err
 		}
@@ -124,6 +125,7 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 			CreateTime:    createTime,
 			UpdateTime:    updateTime,
 			FromUserId:    fromUserId,
+			FromUserName:  fromUserName,
 			TokenId:       tokenId,
 		}
 

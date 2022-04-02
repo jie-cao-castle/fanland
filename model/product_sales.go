@@ -19,5 +19,6 @@ type ProductSale struct {
 	CreateTime    time.Time
 	UpdateTime    time.Time
 	FromUserId    uint64
+	FromUserName  string
 	TokenId       string
 }

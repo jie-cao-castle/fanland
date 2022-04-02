@@ -65,13 +65,14 @@ func (f *NftOrderDB) GetListByProductId(queryProductId uint64) ([]*dao.NftOrderD
 		chainId         uint64
 		chainCode       string
 		transactionHash string
+		toUserId        uint64
+		toUserName      string
 		createTime      time.Time
 		updateTime      time.Time
 	)
 
-	rows, err := f.db.Query("select id, product_id, nft_key, price, price_unit, amount, order_status, chain_id, "+
-		"chain_code, transaction_hash, create_time, update_time from nft_order WHERE product_id = ? ", queryProductId)
-
+	rows, err := f.db.Query("select o.id, o.product_id, o.nft_key, o.price, o.price_unit, o.amount, o.order_status, o.chain_id, "+
+		"o.chain_code, o.transaction_hash, o.create_time, o.update_time, u.id as to_user_id, u.user_name as to_user_name from nft_order o INNER JOIN fanland_user u ON u.id = o.to_user_id WHERE o.product_id = ? ", queryProductId)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +80,8 @@ func (f *NftOrderDB) GetListByProductId(queryProductId uint64) ([]*dao.NftOrderD
 	defer rows.Close()
 	var nftOrders []*dao.NftOrderDO
 	for rows.Next() {
-		err := rows.Scan(&id, &productId, &nftKey, &price, &priceUnit, &amount, &status, &chainId, &chainCode, &transactionHash, &createTime, &updateTime)
+		err := rows.Scan(&id, &productId, &nftKey, &price, &priceUnit, &amount, &status, &chainId, &chainCode,
+			&transactionHash, &createTime, &updateTime, &toUserId, &toUserName)
 		if err != nil {
 			return nil, err
 		}
@@ -97,6 +99,8 @@ func (f *NftOrderDB) GetListByProductId(queryProductId uint64) ([]*dao.NftOrderD
 			TransactionHash: transactionHash,
 			CreateTime:      createTime,
 			UpdateTime:      updateTime,
+			ToUserId:        toUserId,
+			ToUserName:      toUserName,
 		}
 
 		nftOrders = append(nftOrders, nftOrder)
