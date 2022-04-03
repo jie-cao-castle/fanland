@@ -15,7 +15,7 @@ type NftDB struct {
 
 func (f *NftDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"fanland:Password123#@!@tcp(127.0.0.1:3306)/"+f.dbName)
 	if err != nil {
 		log.Fatal(err)
 		return err

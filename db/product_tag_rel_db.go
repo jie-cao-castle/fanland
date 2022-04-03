@@ -15,7 +15,7 @@ type ProductTagRelDB struct {
 
 func (f *ProductTagRelDB) Open() error {
 	db, err := sql.Open("mysql",
-		"user:password@tcp(127.0.0.1:3306)/"+f.dbName)
+		"fanland:Password123#@!@tcp(127.0.0.1:3306)/"+f.dbName)
 	f.db = db
 	if err != nil {
 		log.Fatal(err)
