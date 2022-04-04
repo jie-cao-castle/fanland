@@ -152,6 +152,7 @@ func (f *NftContractDB) GetListByProductId(queryProductId uint64) ([]*dao.NftCon
 			Status:          status,
 			TokenSymbol:     tokenSymbol,
 			TokenName:       tokenName,
+			NextTokenId:     nextTokenId,
 			CreateTime:      createTime,
 			UpdateTime:      updateTime,
 		}

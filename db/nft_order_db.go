@@ -26,8 +26,8 @@ func (f *NftOrderDB) Open() error {
 func (f *NftOrderDB) Insert(nftOrder *dao.NftOrderDO) (err error) {
 
 	query := "INSERT INTO nft_order(product_id, chain_id, chain_code, nft_key, price, price_unit, amount, order_status, " +
-		"transaction_hash, create_time, update_time) " +
-		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
+		"transaction_hash, to_user_id, create_time, update_time) " +
+		"VALUES (?, ?, ? ,?, ? ,?, ?, ? ,?, ?, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)"
 	ctx, cancelfunc := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancelfunc()
 	stmt, err := f.db.PrepareContext(ctx, query)
@@ -38,7 +38,7 @@ func (f *NftOrderDB) Insert(nftOrder *dao.NftOrderDO) (err error) {
 	defer stmt.Close()
 
 	res, err := stmt.ExecContext(ctx, nftOrder.ProductId, nftOrder.ChainId, nftOrder.ChainCode,
-		nftOrder.NftKey, nftOrder.Price, nftOrder.PriceUnit, nftOrder.Amount, nftOrder.Status, nftOrder.TransactionHash)
+		nftOrder.NftKey, nftOrder.Price, nftOrder.PriceUnit, nftOrder.Amount, nftOrder.Status, nftOrder.TransactionHash, nftOrder.ToUserId)
 	if err != nil {
 		log.Errorf("Error %s when inserting row into products table", err)
 		return err
