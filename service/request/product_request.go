@@ -62,3 +62,7 @@ type AddProductSaleRequest struct {
 	FromUserId    uint64    `json:"fromUserId"`
 	TokenId       string    `json:"tokenId"`
 }
+type UpdateProductSaleRequest struct {
+	Id uint64 `json:"id"`
+	AddProductSaleRequest
+}

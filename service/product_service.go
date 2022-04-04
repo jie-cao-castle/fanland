@@ -127,6 +127,26 @@ func (s *ProductService) AddProductSale(c *gin.Context) {
 	c.JSON(http.StatusOK, res)
 }
 
+func (s *ProductService) UpdateProductSale(c *gin.Context) {
+	var req request.UpdateProductSaleRequest
+
+	if err := c.BindJSON(&req); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+	productSale := converter.ConvertReqToUpdateProductSale(&req)
+	err := s.productManager.UpdateProductSale(productSale)
+	if err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	res := response.GenericResponse{Success: true, Result: productSale}
+	c.JSON(http.StatusOK, res)
+}
+
 func (s *ProductService) UpdateProduct(c *gin.Context) {
 	var req request.UpdateProductRequest
 

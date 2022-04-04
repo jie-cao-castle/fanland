@@ -255,6 +255,17 @@ func (manager *ProductManager) AddProductSale(product *model.ProductSale) error 
 	return nil
 }
 
+func (manager *ProductManager) UpdateProductSale(product *model.ProductSale) error {
+	manager.productSaleDB.Open()
+	defer manager.productSaleDB.Close()
+	productDO := converter.ConvertToProductSaleDO(product)
+	if err := manager.productSaleDB.Update(productDO); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (manager *ProductManager) UpdateProduct(product *model.Product) error {
 	manager.productDB.Open()
 	defer manager.productDB.Close()

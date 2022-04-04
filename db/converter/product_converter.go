@@ -73,6 +73,7 @@ func ConvertToProductDO(product *model.Product) *dao.ProductDO {
 
 func ConvertToProductSaleDO(product *model.ProductSale) *dao.ProductSaleDO {
 	productDo := &dao.ProductSaleDO{
+		Id:            product.Id,
 		ProductId:     product.ProductId,
 		ChainId:       product.ChainId,
 		ChainCode:     product.ChainCode,
@@ -106,6 +107,14 @@ func ConvertReqToProductSale(req *request.AddProductSaleRequest) *model.ProductS
 		TokenId:       req.TokenId,
 	}
 	return productSale
+}
+
+func ConvertReqToUpdateProductSale(req *request.UpdateProductSaleRequest) *model.ProductSale {
+	contract := &model.ProductSale{
+		Id:     req.Id,
+		Status: req.Status,
+	}
+	return contract
 }
 
 func ConvertAddReqToNft(req *request.AddNftRequest) *model.NFT {

@@ -69,6 +69,34 @@ func (f *ProductSaleDB) Insert(product *dao.ProductSaleDO) (err error) {
 	return nil
 }
 
+func (f *ProductSaleDB) Update(product *dao.ProductSaleDO) (err error) {
+
+	query := "UPDATE product_sale SET sale_status=?, update_time = CURRENT_TIMESTAMP WHERE id=?"
+
+	ctx, cancelFunc := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancelFunc()
+	stmt, err := f.db.PrepareContext(ctx, query)
+
+	if err != nil {
+		return err
+	}
+	defer stmt.Close()
+	res, err := stmt.ExecContext(ctx, product.Status, product.Id)
+
+	if err != nil {
+		log.Printf("Error %s when inserting row into product_sale table", err)
+		return err
+	}
+
+	_, err = res.RowsAffected()
+	if err != nil {
+		log.Printf("Error %s when finding rows affected", err)
+		return err
+	}
+
+	return nil
+}
+
 func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.ProductSaleDO, error) {
 	var (
 		id            uint64
@@ -93,7 +121,7 @@ func (f *ProductSaleDB) GetListByProductId(queryProductId uint64) ([]*dao.Produc
 
 	rows, err := f.db.Query("select s.id, s.product_id, s.product_name, s.chain_id, s.chain_code, s.chain_name,"+
 		"s.contract_id, s.price, s.price_unit, s.start_time, s.end_time, s.effective_time, s.sale_status, s.from_user_id, u.user_name, s.token_id, s.create_time, "+
-		"s.update_time from product_sale s INNER JOIN fanland_user u ON s.from_user_id = u.id WHERE s.product_id = ? ", queryProductId)
+		"s.update_time from product_sale s INNER JOIN fanland_user u ON s.from_user_id = u.id WHERE s.product_id = ? ORDER BY s.update_time DESC", queryProductId)
 
 	if err != nil {
 		return nil, err

@@ -53,7 +53,7 @@ func (s *Server) Init(options *common.ServerOptions) *gin.Engine {
 	v1.POST("/products/tags", s.productService.GetProductsByTag)
 
 	v1.POST("/products/addSale", s.productService.AddProductSale)
-
+	v1.POST("/products/updateSale", s.productService.UpdateProductSale)
 	v1.GET("/products/top", s.productService.GetTitleProduct)
 	v1.GET("/products/trending", s.productService.GetTrendingProducts)
 	v1.GET("/products/user/:uid", s.productService.GetUserProducts)
