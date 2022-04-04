@@ -39,6 +39,7 @@ type AddNftOrderRequest struct {
 	ChainCode       string `json:"chainCode"`
 	TransactionHash string `json:"transactionHash"`
 	ToUserId        uint64 `json:"toUserId"`
+	SaleId          uint64 `json:"saleId"`
 }
 type UpdateNftOrderRequest struct {
 	Id uint64 `json:"id"`

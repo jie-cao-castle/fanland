@@ -12,12 +12,15 @@ import (
 )
 
 type NftService struct {
-	nftManager *manager.NftManager
-	options    *common.ServerOptions
+	productManager *manager.ProductManager
+	nftManager     *manager.NftManager
+	options        *common.ServerOptions
 }
 
 func (s *NftService) InitService(options *common.ServerOptions) {
 	s.options = options
+	s.productManager = &manager.ProductManager{}
+	s.productManager.InitManager(options)
 	s.nftManager = &manager.NftManager{}
 	s.nftManager.InitManager(options)
 }
@@ -104,6 +107,7 @@ func (s *NftService) UpdateNFTOrder(c *gin.Context) {
 	if err := c.BindJSON(&req); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
+		return
 	}
 
 	var order *model.NftOrder
@@ -111,6 +115,16 @@ func (s *NftService) UpdateNFTOrder(c *gin.Context) {
 	if err := s.nftManager.UpdateNFTOrder(order); err != nil {
 		res := response.GenericResponse{Success: false, Message: err.Error()}
 		c.JSON(http.StatusOK, res)
+		return
+	}
+
+	productSale := &model.ProductSale{}
+	productSale.Status = 2 // completed
+	productSale.Id = order.SaleId
+	if err := s.productManager.UpdateProductSale(productSale); err != nil {
+		res := response.GenericResponse{Success: false, Message: err.Error()}
+		c.JSON(http.StatusOK, res)
+		return
 	}
 
 	res := response.GenericResponse{Success: true, Result: order}

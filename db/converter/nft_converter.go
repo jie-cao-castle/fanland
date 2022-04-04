@@ -79,6 +79,7 @@ func ConvertToNftOrderDO(nft *model.NftOrder) *dao.NftOrderDO {
 		Amount:          nft.Amount,
 		ToUserName:      nft.ToUserName,
 		ToUserId:        nft.ToUserId,
+		SaleId:          nft.SaleId,
 	}
 	return nftDO
 }
@@ -94,6 +95,7 @@ func ConvertReqToNftOrder(req *request.AddNftOrderRequest) *model.NftOrder {
 		TransactionHash: req.TransactionHash,
 		Amount:          req.Amount,
 		ToUserId:        req.ToUserId,
+		SaleId:          req.SaleId,
 	}
 	return nft
 }
@@ -113,6 +115,7 @@ func ConvertToNftOrder(nftDO *dao.NftOrderDO) *model.NftOrder {
 		Amount:          nftDO.Amount,
 		ToUserName:      nftDO.ToUserName,
 		ToUserId:        nftDO.ToUserId,
+		SaleId:          nftDO.SaleId,
 	}
 	return nft
 }
@@ -129,6 +132,7 @@ func ConvertReqToUpdateNftOrder(req *request.UpdateNftOrderRequest) *model.NftOr
 		ProductId:       req.ProductId,
 		TransactionHash: req.TransactionHash,
 		Amount:          req.Amount,
+		SaleId:          req.SaleId,
 	}
 	return nft
 }

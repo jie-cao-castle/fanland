@@ -15,6 +15,7 @@ type NftOrder struct {
 	TransactionHash string
 	ToUserId        uint64
 	ToUserName      string
+	SaleId          uint64
 	CreateTime      time.Time
 	UpdateTime      time.Time
 }
