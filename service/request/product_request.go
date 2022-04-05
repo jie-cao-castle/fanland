@@ -49,18 +49,19 @@ type ProductTagRequest struct {
 }
 
 type AddProductSaleRequest struct {
-	ProductId     uint64    `json:"productId"`
-	ChainId       uint64    `json:"chainId"`
-	ChainCode     string    `json:"chainCode"`
-	ContractId    uint64    `json:"contractId"`
-	Price         uint64    `json:"price"`
-	PriceUnit     uint64    `json:"priceUnit"`
-	StartTime     time.Time `json:"startTime"`
-	EndTime       time.Time `json:"endTime"`
-	EffectiveTime time.Time `json:"effectiveTime"`
-	Status        int16     `json:"status"`
-	FromUserId    uint64    `json:"fromUserId"`
-	TokenId       string    `json:"tokenId"`
+	ProductId       uint64    `json:"productId"`
+	ChainId         uint64    `json:"chainId"`
+	ChainCode       string    `json:"chainCode"`
+	ContractId      uint64    `json:"contractId"`
+	Price           uint64    `json:"price"`
+	PriceUnit       uint64    `json:"priceUnit"`
+	StartTime       time.Time `json:"startTime"`
+	EndTime         time.Time `json:"endTime"`
+	EffectiveTime   time.Time `json:"effectiveTime"`
+	Status          int16     `json:"status"`
+	FromUserId      uint64    `json:"fromUserId"`
+	TokenId         string    `json:"tokenId"`
+	TransactionHash string    `json:"transactionHash"`
 }
 type UpdateProductSaleRequest struct {
 	Id uint64 `json:"id"`
